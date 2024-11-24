@@ -1,109 +1,141 @@
+// Importing necessary Material-UI components for the Notifications dialog
 import {
-    Avatar,
-    Button,
-    Dialog,
-    DialogTitle,
-    ListItem,
-    Skeleton,
-    Stack,
-    Typography,
-  } from "@mui/material";
-  import React, { memo } from "react";
-  import { useDispatch, useSelector } from "react-redux";
-  import { useAsyncMutation, useErrors } from "../../hooks/hook";
-  import {
-    useAcceptFriendRequestMutation,
-    useGetNotificationsQuery,
-  } from "../../redux/api/api";
-  import { setIsNotification } from "../../redux/reducers/misc";
-  
-  const Notifications = () => {
-    const { isNotification } = useSelector((state) => state.misc);
-  
-    const dispatch = useDispatch();
-  
-    const { isLoading, data, error, isError } = useGetNotificationsQuery();
-  
-    const [acceptRequest] = useAsyncMutation(useAcceptFriendRequestMutation);
-  
-    const friendRequestHandler = async ({ _id, accept }) => {
-      dispatch(setIsNotification(false));
-      await acceptRequest("Accepting...", { requestId: _id, accept });
-    };
-  
-    const closeHandler = () => dispatch(setIsNotification(false));
-  
-    useErrors([{ error, isError }]);
-  
-    return (
-      <Dialog open={isNotification} onClose={closeHandler}>
-        <Stack p={{ xs: "1rem", sm: "2rem" }} maxWidth={"25rem"}>
-          <DialogTitle>Notifications</DialogTitle>
-  
-          {isLoading ? (
-            <Skeleton />
-          ) : (
-            <>
-              {data?.allRequests.length > 0 ? (
-                data?.allRequests?.map(({ sender, _id }) => (
+  Avatar, // Avatar component for user images
+  Button, // Button component for actions
+  Dialog, // Dialog component for modal
+  DialogTitle, // DialogTitle for modal title
+  ListItem, // ListItem for each notification
+  Skeleton, // Skeleton for loading state
+  Stack, // Stack for layout
+  Typography, // Typography for text
+  Divider, // Divider for separating list items
+} from "@mui/material";
+
+// Importing React and necessary hooks
+import React, { memo, useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
+// Importing custom hooks and Redux actions
+import { useAsyncMutation, useErrors } from "../../hooks/hook";
+import {
+  useAcceptFriendRequestMutation, // API mutation for accepting friend requests
+  useGetNotificationsQuery, // API query for fetching notifications
+} from "../../redux/api/api";
+import { setIsNotification } from "../../redux/reducers/misc";
+
+// Notifications component definition
+const Notifications = () => {
+  const { isNotification } = useSelector((state) => state.misc); // Selecting notification state
+  const dispatch = useDispatch(); // Hook for dispatching Redux actions
+
+  // Fetch notifications data
+  const { isLoading, data, error, isError } = useGetNotificationsQuery();
+
+  // Local state to manage requests
+  const [requests, setRequests] = useState([]);
+
+  useEffect(() => {
+    if (data?.allRequests) {
+      setRequests(data.allRequests);
+    }
+  }, [data]);
+
+  // Mutation for accepting friend requests
+  const [acceptRequest] = useAsyncMutation(useAcceptFriendRequestMutation);
+
+  // Handler for accepting or rejecting friend requests
+  const friendRequestHandler = async ({ _id, accept }) => {
+    await acceptRequest("Accepting...", { requestId: _id, accept }); // Execute mutation
+    if (accept) {
+      setRequests((prevRequests) => prevRequests.filter((req) => req._id !== _id));
+      if (requests.length === 1) { // Check if it was the last request
+        dispatch(setIsNotification(false)); // Close notifications dialog
+      }
+    }
+  };
+
+  // Handler for closing the notifications dialog
+  const closeHandler = () => dispatch(setIsNotification(false));
+
+  // Custom hook for handling errors
+  useErrors([{ error, isError }]);
+
+  return (
+    <Dialog open={isNotification} onClose={closeHandler} fullWidth> {/* Full width dialog */}
+      <Stack p={2} spacing={2}> {/* Consistent and moderate padding and spacing */}
+        <DialogTitle>Notifications</DialogTitle>
+
+        {/* Display loading state or notifications */}
+        {isLoading ? (
+          <Skeleton variant="rectangular" height={100} />
+        ) : (
+          <>
+            {requests.length > 0 ? (
+              requests.map(({ sender, _id }, index) => (
+                <React.Fragment key={_id}>
                   <NotificationItem
                     sender={sender}
                     _id={_id}
                     handler={friendRequestHandler}
-                    key={_id}
                   />
-                ))
-              ) : (
-                <Typography textAlign={"center"}>0 notifications</Typography>
-              )}
-            </>
-          )}
-        </Stack>
-      </Dialog>
-    );
-  };
-  
-  const NotificationItem = memo(({ sender, _id, handler }) => {
-    const { name, avatar } = sender;
-    return (
-      <ListItem>
-        <Stack
-          direction={"row"}
-          alignItems={"center"}
-          spacing={"1rem"}
-          width={"100%"}
-        >
-          <Avatar />
-  
+                  {index < requests.length - 1 && <Divider />} {/* Add Divider except after last item */}
+                </React.Fragment>
+              ))
+            ) : (
+              <Typography textAlign="center">No notifications</Typography>
+            )}
+          </>
+        )}
+      </Stack>
+    </Dialog>
+  );
+};
+
+// NotificationItem component for individual notifications
+const NotificationItem = memo(({ sender, _id, handler }) => {
+  const { name, avatar } = sender; // Destructuring sender details
+  return (
+    <ListItem>
+      <Stack
+        direction="row"
+        alignItems="center"
+        spacing={2} // Consistent spacing
+        width="100%"
+      >
+        <Avatar src={avatar} alt={name} /> {/* Display sender's avatar */}
+
+        <Stack direction="column" flexGrow={1}> {/* Column layout for name and description */}
+          <Typography variant="body1">{name}</Typography> {/* Display sender's name */}
           <Typography
-            variant="body1"
-            sx={{
-              flexGlow: 1,
-              display: "-webkit-box",
-              WebkitLineClamp: 1,
-              WebkitBoxOrient: "vertical",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              width: "100%",
-            }}
+            variant="body2"
+            sx={{ color: "text.secondary" }} // Lighter color for description
           >
-            {`${name} sent you a friend request.`}
+            sent you a friend request.
           </Typography>
-  
-          <Stack
-            direction={{
-              xs: "column",
-              sm: "row",
-            }}
-          >
-            <Button onClick={() => handler({ _id, accept: true })}>Accept</Button>
-            <Button color="error" onClick={() => handler({ _id, accept: false })}>
-              Reject
-            </Button>
-          </Stack>
         </Stack>
-      </ListItem>
-    );
-  });
-  
-  export default Notifications;
+
+        <Stack direction="row" spacing={1}> {/* Action buttons with spacing */}
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handler({ _id, accept: true })} // Accept request
+            sx={{ textTransform: 'none', padding: '4px 8px' }} // Override to prevent text capitalization
+          >
+            Accept
+          </Button>
+
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => handler({ _id, accept: false })} // Decline request
+            sx={{ textTransform: 'none', padding: '2px 10px' }}
+          >
+            Decline
+          </Button>
+        </Stack>
+      </Stack>
+    </ListItem>
+  );
+});
+
+export default Notifications; // Exporting Notifications component
