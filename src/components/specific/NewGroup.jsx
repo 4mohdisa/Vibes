@@ -75,7 +75,7 @@ const NewGroup = () => {
   return (
     <Dialog onClose={closeHandler} open={isNewGroup} fullWidth> {/* Full width dialog for modern look */}
       <Stack p={2} spacing={2}> {/* Consistent and moderate padding and spacing */}
-        <DialogTitle textAlign="center" variant="h4">
+        <DialogTitle textAlign="center">
           New Group
         </DialogTitle>
 
@@ -84,9 +84,10 @@ const NewGroup = () => {
           value={groupName.value}
           onChange={groupName.changeHandler}
           fullWidth
+          size="small"
         />
 
-        <Typography variant="body1">Members</Typography> {/* Section title for members */}
+        <Typography variant="body1" color={"gray"}>Members</Typography> {/* Section title for members */}
 
         <Stack spacing={1}> {/* List of available friends */}
           {isLoading ? (

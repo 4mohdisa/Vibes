@@ -1,5 +1,5 @@
 import { Add as AddIcon, Remove as RemoveIcon } from "@mui/icons-material";
-import { Avatar, IconButton, ListItem, Stack, Typography } from "@mui/material";
+import { Avatar, Button, IconButton, ListItem, Stack, Typography } from "@mui/material";
 import React, { memo } from "react";
 import { transformImage } from "../../lib/features";
 
@@ -24,7 +24,7 @@ const UserItem = ({
         <Avatar src={transformImage(avatar)} />
 
         <Typography
-          variant="body1"
+          variant="body2"
           sx={{
             flexGlow: 1,
             display: "-webkit-box",
@@ -38,20 +38,25 @@ const UserItem = ({
           {name}
         </Typography>
 
-        <IconButton
+        <Button
           size="small"
           sx={{
-            bgcolor: isAdded ? "error.main" : "primary.main",
-            color: "white",
+            width: "100%",
+            maxWidth: "100px",
+            bgcolor: isAdded ? "transparent" : "primary.main",
+            border: isAdded ? "1px solid gray" : "none",
+            color: isAdded ? "gray" : "white",
             "&:hover": {
-              bgcolor: isAdded ? "error.dark" : "primary.dark",
+              bgcolor: isAdded ? "transparent" : "primary.dark",
             },
+            textTransform: 'none', padding: '4px 8px'
           }}
+          variant={isAdded ? "outlined" : "contained"}
           onClick={() => handler(_id)}
           disabled={handlerIsLoading}
         >
-          {isAdded ? <RemoveIcon /> : <AddIcon />}
-        </IconButton>
+          {isAdded ? "Request sent" : "Send request"}
+        </Button>
       </Stack>
     </ListItem>
   );

@@ -22,6 +22,7 @@ import {
   useGetNotificationsQuery, // API query for fetching notifications
 } from "../../redux/api/api";
 import { setIsNotification } from "../../redux/reducers/misc";
+import { NotificationAddSharp } from "@mui/icons-material";
 
 // Notifications component definition
 const Notifications = () => {
@@ -61,9 +62,15 @@ const Notifications = () => {
   useErrors([{ error, isError }]);
 
   return (
-    <Dialog open={isNotification} onClose={closeHandler} fullWidth> {/* Full width dialog */}
+    <Dialog open={isNotification} onClose={closeHandler} fullWidth PaperProps={{
+      sx: {
+      minHeight: '400px',
+      maxHeight: '400px',
+      overflow: 'hidden',
+      }
+    }}> {/* Full width dialog */}
       <Stack p={2} spacing={2}> {/* Consistent and moderate padding and spacing */}
-        <DialogTitle>Notifications</DialogTitle>
+        <DialogTitle textAlign="center">Notifications</DialogTitle>
 
         {/* Display loading state or notifications */}
         {isLoading ? (
@@ -82,7 +89,12 @@ const Notifications = () => {
                 </React.Fragment>
               ))
             ) : (
-              <Typography textAlign="center">No notifications</Typography>
+              <Stack direction="column" alignItems="center" justifyContent="center" spacing={1} sx={{ height: '100%', flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <NotificationAddSharp fontSize="large" sx={{ margin: 'auto' }} />
+                <Typography textAlign="center" variant="body1" color="gray" sx={{ margin: 'auto' }}>
+                  No notifications
+                </Typography>
+              </Stack>
             )}
           </>
         )}
