@@ -1,239 +1,196 @@
-// Importing necessary components from Material-UI
+import React from "react";
 import {
-  AppBar, // AppBar component for top navigation
-  Backdrop, // Backdrop component for loading states
-  Badge, // Badge component for notifications
-  Box, // Box component for layout
-  IconButton, // IconButton component for clickable icons
-  Toolbar, // Toolbar component for organizing AppBar content
-  Tooltip, // Tooltip component for displaying hints
+  AppBar,
+  Toolbar,
+  Box,
+  IconButton,
+  Tooltip,
+  Badge,
+  Typography,
+  Divider,
+  Stack,
 } from "@mui/material";
-
-// Importing React and hooks
-import React, { Suspense, lazy, useState } from "react";
-
-// Importing icons from Material-UI
 import {
-  Add as AddIcon, // Icon for adding new items
-  Menu as MenuIcon, // Icon for menu
-  Search as SearchIcon, // Icon for search
-  Group as GroupIcon, // Icon for groups
-  Logout as LogoutIcon, // Icon for logout
-  Notifications as NotificationsIcon, // Icon for notifications
+  Add as AddIcon,
+  Search as SearchIcon,
+  Group as GroupIcon,
+  Logout as LogoutIcon,
+  Notifications as NotificationsIcon,
 } from "@mui/icons-material";
-
-// Importing navigation and HTTP libraries
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-
-// Importing server configuration
-import { server } from "../../constants/config";
-
-// Importing toast notifications
-import toast from "react-hot-toast";
-
-// Importing Redux hooks and actions
 import { useDispatch, useSelector } from "react-redux";
-import { userNotExists } from "../../redux/reducers/auth";
-import {
-  setIsMobile, // Action to set mobile view state
-  setIsNewGroup, // Action to set new group state
-  setIsNotification, // Action to set notification state
-  setIsSearch, // Action to set search state
-} from "../../redux/reducers/misc";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { server } from "../../constants/config";
+import AvatarCard from "../shared/AvatarCard";
 import { resetNotificationCount } from "../../redux/reducers/chat";
+import { setIsNewGroup, setIsNotification, setIsSearch } from "../../redux/reducers/misc";
+import { userNotExists } from "../../redux/reducers/auth";
+import { useChatDetailsQuery } from "../../redux/api/api";
 
-// Lazy loading components for better performance
-const SearchDialog = lazy(() => import("../specific/Search"));
-const NotifcationDialog = lazy(() => import("../specific/Notifications"));
-const NewGroupDialog = lazy(() => import("../specific/NewGroup"));
-
-// Header component definition
 const Header = () => {
-  // Hook for navigation
   const navigate = useNavigate();
-
-  // Hook for dispatching Redux actions
   const dispatch = useDispatch();
+  const { chatId } = useParams();
+  const { user } = useSelector((state) => state.auth);
 
-  // Selecting state from Redux store
-  const { isSearch, isNotification, isNewGroup } = useSelector(
-    (state) => state.misc
-  );
+  // Get notification count from Redux store
   const { notificationCount } = useSelector((state) => state.chat);
+  const { isSearch, isNotification, isNewGroup } = useSelector((state) => state.misc);
 
-  // Function to handle mobile view toggle
-  const handleMobile = () => dispatch(setIsMobile(true));
+  // Fetch current chat details if chatId exists
+  const { data: chatData } = useChatDetailsQuery(
+    { chatId, populate: true },
+    { skip: !chatId }
+  );
 
-  // Function to open search dialog
-  const openSearch = () => dispatch(setIsSearch(true));
+  // Get the other user's information in case of individual chat
+  const otherUser = chatData?.chat?.members?.find(
+    (member) => member._id !== user?._id
+  );
 
-  // Function to open new group dialog
-  const openNewGroup = () => {
-    dispatch(setIsNewGroup(true));
-  };
+  // Set current chat information based on chat type
+  const currentChat = chatData?.chat
+    ? {
+        avatar: chatData.chat.groupChat
+          ? Array.isArray(chatData.chat.avatar) 
+            ? chatData.chat.avatar 
+            : [chatData.chat.avatar].filter(Boolean)
+          : Array.isArray(otherUser?.avatar)
+            ? otherUser.avatar
+            : [otherUser?.avatar].filter(Boolean),
+        name: chatData.chat.groupChat
+          ? chatData.chat.name
+          : otherUser?.name || "",
+        username: !chatData.chat.groupChat ? otherUser?.username || "" : "",
+        groupChat: chatData.chat.groupChat
+      }
+    : null;
 
-  // Function to open notifications dialog and reset count
-  const openNotification = () => {
+  const handleSearch = () => dispatch(setIsSearch(true));
+  const handleNewGroup = () => dispatch(setIsNewGroup(true));
+  const handleNotification = () => {
     dispatch(setIsNotification(true));
     dispatch(resetNotificationCount());
   };
 
-  // Function to navigate to groups page
-  const navigateToGroup = () => navigate("/groups");
-
-  // Function to handle user logout
   const logoutHandler = async () => {
     try {
-      // Send GET request to logout endpoint
-      const { data } = await axios.get(`${server}/api/v1/user/logout`, {
-        withCredentials: true,
-      });
-      // Dispatch action to update user state
+      const { data } = await axios.get(`${server}/api/v1/user/logout`, { withCredentials: true });
       dispatch(userNotExists());
-      // Show success message
       toast.success(data.message);
     } catch (error) {
-      // Show error message
       toast.error(error?.response?.data?.message || "Something went wrong");
     }
   };
 
-  // State for menu anchor element
-  const [anchorEl, setAnchorEl] = useState(null);
-
-  // Function to close the menu
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  // Boolean to check if menu is open
-  const isMenuOpen = Boolean(anchorEl);
-
   return (
-    <>
-      {/* Container for AppBar */}
-      <Box sx={{ flexGrow: 1 }} height={"4rem"}>
-        <AppBar
-          position="static"
+    <Box sx={{ flexGrow: 1 }}>
+      <AppBar
+        position="static"
+        sx={{
+          bgcolor: "black",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderBottom: "1px solid lightgray",
+        }}
+      >
+        <Toolbar
           sx={{
-            // Set background color to black
-            bgcolor: "black",
+            display: "flex",
+            justifyContent: "space-between",
+            width: "100%",
           }}
         >
-          {/* Toolbar for organizing AppBar content */}
-          <Toolbar>
-            {/* Logo image */}
+          {/* Left Section: Application Logo */}
+          <Box
+            sx={{
+              flex: 1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-start",
+            }}
+          >
             <Box
               component="img"
-              sx={{ height: 40, display: { xs: "none", sm: "block" } }}
+              src="/vibes.png"
               alt="Logo"
-              src="/vibes.png" // Logo image source
+              sx={{ height: 40 }}
             />
-            {/* Display menu icon on small screens */}
-            <Box
+          </Box>
+
+          <Divider orientation="vertical" flexItem sx={{ bgcolor: "lightgray", mx: 2 }} />
+
+          {/* Center Section: Profile Information */}
+          {currentChat && (
+            <Stack
+              direction="row"
+              alignItems="center"
+              spacing={0}
               sx={{
-                display: { xs: "block", sm: "none" },
+                flex: 2,
+                justifyContent: "flex-start", // Align items to the left
+                paddingLeft: 0
               }}
             >
-              {/* Mobile menu button */}
-              <IconButton color="inherit" onClick={handleMobile}>
-                <MenuIcon />
+              <AvatarCard avatar={currentChat.avatar} />
+              <Stack>
+                <Typography variant="h6" fontWeight={600}>{currentChat.name}</Typography>
+                {!currentChat.groupChat && currentChat.username && (
+                  <Typography variant="subtitle2" color="text.secondary">
+                    @{currentChat.username}
+                  </Typography>
+                )}
+              </Stack>
+            </Stack>
+          )}
+
+          <Divider orientation="vertical" flexItem sx={{ bgcolor: "lightgray", mx: 2 }} />
+
+          {/* Right Section: Action Buttons */}
+          <Box
+            sx={{
+              flex: 1,
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+              gap: "1rem",
+            }}
+          >
+            <Tooltip title="Search">
+              <IconButton onClick={handleSearch} sx={{ color: "white" }}>
+                <SearchIcon />
               </IconButton>
-            </Box>
-            {/* Spacer to push icons to the right */}
-            <Box
-              sx={{
-                flexGrow: 1,
-              }}
-            />
-            {/* Container for action icons */}
-            <Box>
-              {/* Search icon */}
-              <IconBtn
-                title={"Search"}
-                icon={<SearchIcon sx={{ color: "white" }} />}
-                onClick={openSearch}
-              />
-              {/* New group icon */}
-              <IconBtn
-                title={"New Group"}
-                icon={<AddIcon sx={{ color: "white" }} />}
-                onClick={openNewGroup}
-              />
-              {/* Manage groups icon */}
-              <IconBtn
-                title={"Manage Groups"}
-                icon={<GroupIcon sx={{ color: "white" }} />}
-                onClick={navigateToGroup}
-              />
-              {/* Notifications icon */}
-              <IconBtn
-                title={"Notifications"}
-                icon={<NotificationsIcon sx={{ color: "white" }} />}
-                onClick={openNotification}
-                value={notificationCount} // Badge value for notifications
-              />
-              {/* Logout action */}
-              <IconButton
-                edge="end"
-                aria-label="account of current user"
-                aria-controls={isMenuOpen ? "primary-search-account-menu" : undefined}
-                aria-haspopup="true"
-                onClick={logoutHandler}
-                color="inherit"
-              >
-                {/* Logout icon */}
-                <LogoutIcon sx={{ color: "white" }} />
+            </Tooltip>
+            <Tooltip title="New Group">
+              <IconButton onClick={handleNewGroup} sx={{ color: "white" }}>
+                <AddIcon />
               </IconButton>
-            </Box>
-          </Toolbar>
-        </AppBar>
-      </Box>
-
-      {/* Lazy load search dialog */}
-      {isSearch && (
-        <Suspense fallback={<Backdrop open />}>
-          <SearchDialog />
-        </Suspense>
-      )}
-
-      {/* Lazy load notifications dialog */}
-      {isNotification && (
-        <Suspense fallback={<Backdrop open />}>
-          <NotifcationDialog />
-        </Suspense>
-      )}
-
-      {/* Lazy load new group dialog */}
-      {isNewGroup && (
-        <Suspense fallback={<Backdrop open />}>
-          <NewGroupDialog />
-        </Suspense>
-      )}
-    </>
+            </Tooltip>
+            <Tooltip title="Manage Groups">
+              <IconButton onClick={() => navigate("/groups")} sx={{ color: "white" }}>
+                <GroupIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Notifications">
+              <IconButton onClick={handleNotification} sx={{ color: "white" }}>
+                <Badge badgeContent={notificationCount} color="error">
+                  <NotificationsIcon />
+                </Badge>
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Logout">
+              <IconButton onClick={logoutHandler} sx={{ color: "white" }}>
+                <LogoutIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        </Toolbar>
+      </AppBar>
+    </Box>
   );
 };
 
-// Icon button component
-const IconBtn = ({ title, icon, onClick, value }) => {
-  return (
-    // Tooltip for displaying hints
-    <Tooltip title={title}>
-      {/* IconButton component for clickable icons */}
-      <IconButton color="inherit" size="large" onClick={onClick}>
-        {/* Badge component for notifications */}
-        {value ? (
-          <Badge badgeContent={value} color="error">
-            {icon}
-          </Badge>
-        ) : (
-          icon
-        )}
-      </IconButton>
-    </Tooltip>
-  );
-};
-
-// Export Header component
 export default Header;
