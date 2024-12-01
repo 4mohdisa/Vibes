@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import {
   AppBar,
   Toolbar,
@@ -7,8 +7,8 @@ import {
   Tooltip,
   Badge,
   Typography,
-  Divider,
   Stack,
+  CircularProgress,
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -28,42 +28,45 @@ import { setIsNewGroup, setIsNotification, setIsSearch } from "../../redux/reduc
 import { userNotExists } from "../../redux/reducers/auth";
 import { useChatDetailsQuery } from "../../redux/api/api";
 
+const SearchDialog = React.lazy(() => import("../specific/Search"));
+const NotifcationDialog = React.lazy(() => import("../specific/Notifications"));
+const NewGroupDialog = React.lazy(() => import("../specific/NewGroup"));
+
 const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { chatId } = useParams();
   const { user } = useSelector((state) => state.auth);
 
-  // Get notification count from Redux store
+  // Redux states for dialogs
   const { notificationCount } = useSelector((state) => state.chat);
-  const { isSearch, isNotification, isNewGroup } = useSelector((state) => state.misc);
+  const { isSearch, isNotification, isNewGroup } = useSelector(
+    (state) => state.misc
+  );
 
-  // Fetch current chat details if chatId exists
   const { data: chatData } = useChatDetailsQuery(
     { chatId, populate: true },
     { skip: !chatId }
   );
 
-  // Get the other user's information in case of individual chat
   const otherUser = chatData?.chat?.members?.find(
     (member) => member._id !== user?._id
   );
 
-  // Set current chat information based on chat type
   const currentChat = chatData?.chat
     ? {
         avatar: chatData.chat.groupChat
-          ? Array.isArray(chatData.chat.avatar) 
-            ? chatData.chat.avatar 
+          ? Array.isArray(chatData.chat.avatar)
+            ? chatData.chat.avatar
             : [chatData.chat.avatar].filter(Boolean)
           : Array.isArray(otherUser?.avatar)
-            ? otherUser.avatar
-            : [otherUser?.avatar].filter(Boolean),
+          ? otherUser.avatar
+          : [otherUser?.avatar].filter(Boolean),
         name: chatData.chat.groupChat
           ? chatData.chat.name
           : otherUser?.name || "",
         username: !chatData.chat.groupChat ? otherUser?.username || "" : "",
-        groupChat: chatData.chat.groupChat
+        groupChat: chatData.chat.groupChat,
       }
     : null;
 
@@ -76,7 +79,9 @@ const Header = () => {
 
   const logoutHandler = async () => {
     try {
-      const { data } = await axios.get(`${server}/api/v1/user/logout`, { withCredentials: true });
+      const { data } = await axios.get(`${server}/api/v1/user/logout`, {
+        withCredentials: true,
+      });
       dispatch(userNotExists());
       toast.success(data.message);
     } catch (error) {
@@ -85,111 +90,148 @@ const Header = () => {
   };
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar
-        position="static"
-        sx={{
-          bgcolor: "black",
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          borderBottom: "1px solid lightgray",
-        }}
-      >
-        <Toolbar
+    <>
+      <Box sx={{ flexGrow: 1 }}>
+        <AppBar
+          position="static"
           sx={{
+            bgcolor: "black",
             display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
             justifyContent: "space-between",
-            width: "100%",
+            borderBottom: "1px solid",
+            borderColor: "rgba(255, 255, 255, 0.2)",
           }}
         >
-          {/* Left Section: Application Logo */}
-          <Box
+          <Toolbar
             sx={{
-              flex: 1,
               display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-start",
+              justifyContent: "space-between",
+              width: "100%",
             }}
           >
+            {/* Left Section: Application Logo */}
             <Box
-              component="img"
-              src="/vibes.png"
-              alt="Logo"
-              sx={{ height: 40 }}
-            />
-          </Box>
-
-          <Divider orientation="vertical" flexItem sx={{ bgcolor: "lightgray", mx: 2 }} />
-
-          {/* Center Section: Profile Information */}
-          {currentChat && (
-            <Stack
-              direction="row"
-              alignItems="center"
-              spacing={0}
               sx={{
-                flex: 2,
-                justifyContent: "flex-start", // Align items to the left
-                paddingLeft: 0
+                flex: 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-start",
               }}
             >
-              <AvatarCard avatar={currentChat.avatar} />
-              <Stack>
-                <Typography variant="h6" fontWeight={600}>{currentChat.name}</Typography>
-                {!currentChat.groupChat && currentChat.username && (
-                  <Typography variant="subtitle2" color="text.secondary">
-                    @{currentChat.username}
+              <Box
+                component="img"
+                src="/vibes.png"
+                alt="Logo"
+                sx={{ height: 40 }}
+              />
+            </Box>
+
+            {/* Center Section: Profile Information */}
+            {currentChat && (
+              <Stack
+                direction="row"
+                alignItems="center"
+                spacing={0}
+                sx={{
+                  flex: 2,
+                  justifyContent: "flex-start",
+                  paddingLeft: 0,
+                }}
+              >
+                <AvatarCard avatar={currentChat.avatar} />
+                <Stack>
+                  <Typography variant="h6" fontWeight={600}>
+                    {currentChat.name}
                   </Typography>
-                )}
+                  {!currentChat.groupChat && currentChat.username && (
+                    <Typography variant="subtitle2" color="text.secondary">
+                      @{currentChat.username}
+                    </Typography>
+                  )}
+                </Stack>
               </Stack>
-            </Stack>
-          )}
+            )}
 
-          <Divider orientation="vertical" flexItem sx={{ bgcolor: "lightgray", mx: 2 }} />
+            {/* Right Section: Action Buttons */}
+            <Box
+              sx={{
+                flex: 1,
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "center",
+                gap: "1rem",
+              }}
+            >
+              <Tooltip title="Search">
+                <IconButton onClick={handleSearch} sx={{ color: "white" }}>
+                  <SearchIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="New Group">
+                <IconButton onClick={handleNewGroup} sx={{ color: "white" }}>
+                  <AddIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Manage Groups">
+                <IconButton
+                  onClick={() => navigate("/groups")}
+                  sx={{ color: "white" }}
+                >
+                  <GroupIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Notifications">
+                <IconButton
+                  onClick={handleNotification}
+                  sx={{ color: "white" }}
+                >
+                  <Badge 
+                    badgeContent={notificationCount}
+                    color="success"
+                    sx={{
+                      "& .MuiBadge-badge": {
+                        backgroundColor: "#44b700",
+                        boxShadow: `0 0 0 2px white`,
+                        fontSize: '10px',
+                        height: '16px',
+                        minWidth: '16px',
+                        padding: '0 4px'
+                      }
+                    }}
+                  >
+                    <NotificationsIcon />
+                  </Badge>
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Logout">
+                <IconButton onClick={logoutHandler} sx={{ color: "white" }}>
+                  <LogoutIcon />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          </Toolbar>
+        </AppBar>
+      </Box>
 
-          {/* Right Section: Action Buttons */}
-          <Box
-            sx={{
-              flex: 1,
-              display: "flex",
-              justifyContent: "flex-end",
-              alignItems: "center",
-              gap: "1rem",
-            }}
-          >
-            <Tooltip title="Search">
-              <IconButton onClick={handleSearch} sx={{ color: "white" }}>
-                <SearchIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="New Group">
-              <IconButton onClick={handleNewGroup} sx={{ color: "white" }}>
-                <AddIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Manage Groups">
-              <IconButton onClick={() => navigate("/groups")} sx={{ color: "white" }}>
-                <GroupIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Notifications">
-              <IconButton onClick={handleNotification} sx={{ color: "white" }}>
-                <Badge badgeContent={notificationCount} color="error">
-                  <NotificationsIcon />
-                </Badge>
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Logout">
-              <IconButton onClick={logoutHandler} sx={{ color: "white" }}>
-                <LogoutIcon />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        </Toolbar>
-      </AppBar>
-    </Box>
+      {/* Dialog Components */}
+      {isSearch && (
+        <Suspense fallback={<Box display="flex" justifyContent="center" alignItems="center"><CircularProgress /></Box>}>
+          <SearchDialog />
+        </Suspense>
+      )}
+      {isNotification && (
+        <Suspense fallback={<Box display="flex" justifyContent="center" alignItems="center"><CircularProgress /></Box>}>
+          <NotifcationDialog />
+        </Suspense>
+      )}
+      {isNewGroup && (
+        <Suspense fallback={<Box display="flex" justifyContent="center" alignItems="center"><CircularProgress /></Box>}>
+          <NewGroupDialog />
+        </Suspense>
+      )}
+    </>
   );
 };
 

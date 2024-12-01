@@ -64,20 +64,25 @@ const Notifications = () => {
   return (
     <Dialog open={isNotification} onClose={closeHandler} fullWidth PaperProps={{
       sx: {
-      minHeight: '400px',
-      maxHeight: '400px',
-      overflow: 'hidden',
+        minHeight: '400px',
+        maxHeight: '400px',
+        overflow: 'hidden',
       }
-    }}> {/* Full width dialog */}
-      <Stack p={2} spacing={2}> {/* Consistent and moderate padding and spacing */}
+    }}>
+      <Stack p={2} spacing={2}>
         <DialogTitle textAlign="center">Notifications</DialogTitle>
 
-        {/* Display loading state or notifications */}
         {isLoading ? (
           <Skeleton variant="rectangular" height={100} />
+        ) : isError ? (
+          <Stack direction="column" alignItems="center" justifyContent="center" spacing={1} sx={{ height: '100%', flexGrow: 1 }}>
+            <Typography color="error" textAlign="center">
+              Error loading notifications. Please try again later.
+            </Typography>
+          </Stack>
         ) : (
           <>
-            {requests.length > 0 ? (
+            {requests?.length > 0 ? (
               requests.map(({ sender, _id }, index) => (
                 <React.Fragment key={_id}>
                   <NotificationItem
@@ -85,13 +90,13 @@ const Notifications = () => {
                     _id={_id}
                     handler={friendRequestHandler}
                   />
-                  {index < requests.length - 1 && <Divider />} {/* Add Divider except after last item */}
+                  {index < requests.length - 1 && <Divider />}
                 </React.Fragment>
               ))
             ) : (
-              <Stack direction="column" alignItems="center" justifyContent="center" spacing={1} sx={{ height: '100%', flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <NotificationAddSharp fontSize="large" sx={{ margin: 'auto' }} />
-                <Typography textAlign="center" variant="body1" color="gray" sx={{ margin: 'auto' }}>
+              <Stack direction="column" alignItems="center" justifyContent="center" spacing={1} sx={{ height: '100%', flexGrow: 1 }}>
+                <NotificationAddSharp fontSize="large" />
+                <Typography textAlign="center" variant="body1" color="text.secondary">
                   No notifications
                 </Typography>
               </Stack>
@@ -105,44 +110,44 @@ const Notifications = () => {
 
 // NotificationItem component for individual notifications
 const NotificationItem = memo(({ sender, _id, handler }) => {
-  const { name, avatar } = sender; // Destructuring sender details
+  // Add null check for sender
+  if (!sender) return null;
+  
+  const { name = 'Unknown User', avatar = '' } = sender; // Provide default values
+  
   return (
     <ListItem>
       <Stack
         direction="row"
         alignItems="center"
-        spacing={2} // Consistent spacing
+        spacing={2}
         width="100%"
       >
-        <Avatar src={avatar} alt={name} /> {/* Display sender's avatar */}
+        <Avatar src={avatar} alt={name} /> {/* Will show first letter if avatar is empty */}
 
-        <Stack direction="column" flexGrow={1}> {/* Column layout for name and description */}
-          <Typography variant="body1">{name}</Typography> {/* Display sender's name */}
-          <Typography
-            variant="body2"
-            sx={{ color: "text.secondary" }} // Lighter color for description
-          >
-            sent you a friend request.
+        <Stack direction="column" flexGrow={1}>
+          <Typography variant="body1">{name}</Typography>
+          <Typography variant="body2" color="textSecondary">
+            Sent you a friend request
           </Typography>
         </Stack>
 
-        <Stack direction="row" spacing={1}> {/* Action buttons with spacing */}
+        <Stack direction="row" spacing={1}>
           <Button
             variant="contained"
             color="primary"
-            onClick={() => handler({ _id, accept: true })} // Accept request
-            sx={{ textTransform: 'none', padding: '4px 8px' }} // Override to prevent text capitalization
+            size="small"
+            onClick={() => handler({ _id, accept: true })}
           >
             Accept
           </Button>
-
           <Button
-            variant="contained"
+            variant="outlined"
             color="error"
-            onClick={() => handler({ _id, accept: false })} // Decline request
-            sx={{ textTransform: 'none', padding: '2px 10px' }}
+            size="small"
+            onClick={() => handler({ _id, accept: false })}
           >
-            Decline
+            Reject
           </Button>
         </Stack>
       </Stack>
