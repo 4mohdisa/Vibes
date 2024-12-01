@@ -122,9 +122,9 @@ const Header = () => {
             >
               <Box
                 component="img"
-                src="/vibes.png"
+                src="/logo.svg"
                 alt="Logo"
-                sx={{ height: 40 }}
+                sx={{ height: 80 }}
               />
             </Box>
 

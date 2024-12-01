@@ -113,7 +113,10 @@ const Login = () => {
   return (
     <div
       style={{
-        backgroundImage: bgGradient,
+        backgroundImage: "url('/Abstract-Background-min.jpg')",
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
+        height: '100vh',
       }}
     >
       <Container
@@ -137,11 +140,12 @@ const Login = () => {
         >
           {isLogin ? (
             <>
-              <Typography variant="h5">Login</Typography>
+              <img src="/logo-black.svg" alt="Logo" style={{ width: '100px', marginBottom: '1rem' }} />
+              <Typography variant="h5" style={{ color: 'black' }}>Login</Typography>
               <form
                 style={{
-                  width: "100%",
-                  marginTop: "1rem",
+                  width: '100%',
+                  marginTop: '0.5rem',
                 }}
                 onSubmit={handleLogin}
               >
@@ -149,10 +153,16 @@ const Login = () => {
                   required
                   fullWidth
                   label="Username"
-                  margin="normal"
+                  margin="dense"
                   variant="outlined"
                   value={username.value}
                   onChange={username.changeHandler}
+                  InputProps={{
+                    style: { height: '40px', borderColor: 'black' },
+                  }}
+                  InputLabelProps={{
+                    style: { color: 'black' },
+                  }}
                 />
 
                 <TextField
@@ -160,18 +170,28 @@ const Login = () => {
                   fullWidth
                   label="Password"
                   type="password"
-                  margin="normal"
+                  margin="dense"
                   variant="outlined"
                   value={password.value}
                   onChange={password.changeHandler}
+                  InputProps={{
+                    style: { height: '40px', borderColor: 'black' },
+                  }}
+                  InputLabelProps={{
+                    style: { color: 'black' },
+                  }}
                 />
 
                 <Button
                   sx={{
-                    marginTop: "1rem",
+                    marginTop: '0.5rem',
+                    bgcolor: 'black',
+                    color: 'white',
+                    '&:hover': {
+                      bgcolor: 'grey',
+                    },
                   }}
                   variant="contained"
-                  color="primary"
                   type="submit"
                   fullWidth
                   disabled={isLoading}
@@ -188,6 +208,7 @@ const Login = () => {
                   fullWidth
                   variant="text"
                   onClick={toggleLogin}
+                  style={{ color: 'black' }}
                 >
                   Sign Up Instead
                 </Button>
@@ -195,20 +216,21 @@ const Login = () => {
             </>
           ) : (
             <>
-              <Typography variant="h5">Sign Up</Typography>
+              <img src="/logo-black.svg" alt="Logo" style={{ width: '100px', marginBottom: '1rem' }} />
+              <Typography variant="h5" style={{ color: 'black' }}>Sign Up</Typography>
               <form
                 style={{
-                  width: "100%",
-                  marginTop: "1rem",
+                  width: '100%',
+                  marginTop: '0.5rem',
                 }}
                 onSubmit={handleSignUp}
               >
-                <Stack position={"relative"} width={"10rem"} margin={"auto"}>
+                <Stack position={"relative"} width={"8rem"} margin={"auto"}>
                   <Avatar
                     sx={{
-                      width: "10rem",
-                      height: "10rem",
-                      objectFit: "contain",
+                      width: '8rem',
+                      height: '8rem',
+                      objectFit: 'contain',
                     }}
                     src={avatar.preview}
                   />
@@ -252,29 +274,47 @@ const Login = () => {
                   required
                   fullWidth
                   label="Name"
-                  margin="normal"
+                  margin="dense"
                   variant="outlined"
                   value={name.value}
                   onChange={name.changeHandler}
+                  InputProps={{
+                    style: { height: '40px', borderColor: 'black' },
+                  }}
+                  InputLabelProps={{
+                    style: { color: 'black' },
+                  }}
                 />
 
                 <TextField
                   required
                   fullWidth
                   label="Bio"
-                  margin="normal"
+                  margin="dense"
                   variant="outlined"
                   value={bio.value}
                   onChange={bio.changeHandler}
+                  InputProps={{
+                    style: { height: '40px', borderColor: 'black' },
+                  }}
+                  InputLabelProps={{
+                    style: { color: 'black' },
+                  }}
                 />
                 <TextField
                   required
                   fullWidth
                   label="Username"
-                  margin="normal"
+                  margin="dense"
                   variant="outlined"
                   value={username.value}
                   onChange={username.changeHandler}
+                  InputProps={{
+                    style: { height: '40px', borderColor: 'black' },
+                  }}
+                  InputLabelProps={{
+                    style: { color: 'black' },
+                  }}
                 />
 
                 {username.error && (
@@ -288,18 +328,28 @@ const Login = () => {
                   fullWidth
                   label="Password"
                   type="password"
-                  margin="normal"
+                  margin="dense"
                   variant="outlined"
                   value={password.value}
                   onChange={password.changeHandler}
+                  InputProps={{
+                    style: { height: '40px', borderColor: 'black' },
+                  }}
+                  InputLabelProps={{
+                    style: { color: 'black' },
+                  }}
                 />
 
                 <Button
                   sx={{
-                    marginTop: "1rem",
+                    marginTop: '0.5rem',
+                    bgcolor: 'black',
+                    color: 'white',
+                    '&:hover': {
+                      bgcolor: 'grey',
+                    },
                   }}
                   variant="contained"
-                  color="primary"
                   type="submit"
                   fullWidth
                   disabled={isLoading}
@@ -316,6 +366,7 @@ const Login = () => {
                   fullWidth
                   variant="text"
                   onClick={toggleLogin}
+                  style={{ color: 'black' }}
                 >
                   Login Instead
                 </Button>
