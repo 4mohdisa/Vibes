@@ -14,51 +14,96 @@ const MessageComponent = ({ message, user }) => {
   const timeAgo = moment(createdAt).fromNow();
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: "-100%" }}
-      whileInView={{ opacity: 1, x: 0 }}
-      style={{
-        alignSelf: sameSender ? "flex-end" : "flex-start",
-        backgroundColor: "white",
-        color: "black",
-        borderRadius: "5px",
-        padding: "0.5rem",
-        width: "fit-content",
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: sameSender ? "flex-end" : "flex-start",
+        marginBottom: "1rem",
       }}
     >
+      {/* Sender's Name and Timestamp */}
       {!sameSender && (
-        <Typography color={lightBlue} fontWeight={"600"} variant="caption">
+        <Typography
+          sx={{
+            fontSize: "0.8rem",
+            fontWeight: "600",
+            color: lightBlue, // Sender's name in light blue
+            marginBottom: "0.3rem",
+          }}
+        >
           {sender.name}
         </Typography>
       )}
 
-      {content && <Typography>{content}</Typography>}
+      {/* Message Bubble */}
+      <motion.div
+        initial={{ opacity: 0, x: sameSender ? "100%" : "-100%" }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.3 }}
+        style={{
+          backgroundColor: "rgba(0, 0, 0, 0.8)", // Light black background
+          color: "white", // White text
+          borderRadius: "10px",
+          padding: "0.8rem",
+          maxWidth: "70%",
+          wordBreak: "break-word", // Ensure long text wraps properly
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)", // Subtle shadow
+        }}
+      >
 
-      {attachments.length > 0 &&
-        attachments.map((attachment, index) => {
-          const url = attachment.url;
-          const file = fileFormat(url);
+        {/* Message Content */}
+        {content && (
+          <Typography
+            sx={{
+              fontSize: "0.95rem",
+              lineHeight: "1.5",
+            }}
+          >
+            {content}
+          </Typography>
+        )}
 
-          return (
-            <Box key={index}>
-              <a
-                href={url}
-                target="_blank"
-                download
-                style={{
-                  color: "black",
+        {/* Attachments */}
+        {attachments.length > 0 &&
+          attachments.map((attachment, index) => {
+            const url = attachment.url;
+            const file = fileFormat(url);
+
+            return (
+              <Box
+                key={index}
+                sx={{
+                  marginTop: "0.5rem",
                 }}
               >
-                {RenderAttachment(file, url)}
-              </a>
-            </Box>
-          );
-        })}
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    color: "white",
+                    textDecoration: "underline", // Emphasize attachment links
+                    fontSize: "0.85rem",
+                  }}
+                >
+                  {RenderAttachment(file, url)}
+                </a>
+              </Box>
+            );
+          })}
+      </motion.div>
 
-      <Typography variant="caption" color={"text.secondary"}>
+      <Typography
+        sx={{
+          fontSize: "10px",
+          color: "rgba(255, 255, 255, 0.6)", // Subtle white for timestamp
+          marginTop: "0.3rem",
+        }}
+      >
         {timeAgo}
       </Typography>
-    </motion.div>
+    </Box>
   );
 };
 

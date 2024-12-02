@@ -188,7 +188,7 @@ const Chat = ({ chatId, user }) => {
         boxSizing={"border-box"}
         padding={"1rem"}
         spacing={"1rem"}
-        bgcolor={grayColor}
+        bgcolor={"rgba(0,0,0,0.90)"}
         height={"90%"}
         sx={{
           overflowX: "hidden",
@@ -205,52 +205,74 @@ const Chat = ({ chatId, user }) => {
       </Stack>
 
       <form
-        style={{
-          height: "10%",
-        }}
-        onSubmit={submitHandler}
-      >
-        <Stack
-          direction={"row"}
-          height={"100%"}
-          padding={"1rem"}
-          alignItems={"center"}
-          position={"relative"}
-        >
-          <IconButton
-            sx={{
-              position: "absolute",
-              left: "1.5rem",
-              rotate: "30deg",
-            }}
-            onClick={handleFileOpen}
-          >
-            <AttachFileIcon />
-          </IconButton>
+  style={{
+    height: "10%",
+    backgroundColor: "black", // Black background for the form
+    borderTop: "1px solid rgba(255, 255, 255, 0.2)", // Subtle border for separation
+  }}
+  onSubmit={submitHandler}
+>
+  <Stack
+    direction={"row"}
+    height={"100%"}
+    padding={"1rem"}
+    alignItems={"center"}
+    position={"relative"}
+  >
+    {/* Attach File Button */}
+    <IconButton
+      sx={{
+        position: "absolute",
+        left: "1rem",
+        color: "white", // White icon for dark background
+        "&:hover": {
+          color: "rgba(255, 165, 0, 0.8)", // Orange hover effect
+        },
+      }}
+      onClick={handleFileOpen}
+    >
+      <AttachFileIcon />
+    </IconButton>
 
-          <InputBox
-            placeholder="Type Message Here..."
-            value={message}
-            onChange={messageOnChange}
-          />
+    {/* Message Input Box */}
+    <input
+      type="text"
+      placeholder="Type your message here..."
+      value={message}
+      onChange={messageOnChange}
+      style={{
+        flex: 1,
+        padding: "0.8rem 1.2rem",
+        marginLeft: "3rem", // Space to avoid overlap with the attach button
+        marginRight: "1rem", // Space before the send button
+        backgroundColor: "rgba(255, 255, 255, 0.1)", // Subtle background for input box
+        color: "white", // White text
+        border: "1px solid rgba(255, 255, 255, 0.2)", // Subtle border
+        borderRadius: "20px", // Rounded corners
+        outline: "none", // No focus outline
+        fontSize: "1rem",
+        fontFamily: "inherit",
+      }}
+    />
 
-          <IconButton
-            type="submit"
-            sx={{
-              rotate: "-30deg",
-              bgcolor: orange,
-              color: "white",
-              marginLeft: "1rem",
-              padding: "0.5rem",
-              "&:hover": {
-                bgcolor: "error.dark",
-              },
-            }}
-          >
-            <SendIcon />
-          </IconButton>
-        </Stack>
-      </form>
+    {/* Send Button */}
+    <IconButton
+      type="submit"
+      sx={{
+        bgcolor: "white", // Orange background for the button
+        color: "black", // White icon color
+        padding: "0.8rem",
+        borderRadius: "50%", // Circular button
+        "&:hover": {
+          bgcolor: "rgba(255, 255, 255, 0.9)", // Slightly darker orange hover effect
+        },
+      }}
+    >
+      <SendIcon color="black" />
+    </IconButton>
+  </Stack>
+</form>
+
 
       <FileMenu anchorE1={fileMenuAnchor} chatId={chatId} />
     </Fragment>
