@@ -231,37 +231,65 @@ const Groups = () => {
     </Stack>
   );
 
-  const ButtonGroup = (
-    <Stack
-      direction={{
-        xs: "column-reverse",
-        sm: "row",
-      }}
-      spacing={"1rem"}
-      p={{
-        xs: "0",
-        sm: "1rem",
-        md: "1rem 4rem",
+const ButtonGroup = (
+  <Stack
+    direction={{
+      xs: "column-reverse",
+      sm: "row",
+    }}
+    spacing={2}
+    p={{
+      xs: "1rem",
+      sm: "1.5rem",
+      md: "2rem 4rem",
+    }}
+    justifyContent="center"
+    alignItems={{
+      xs: "stretch",
+      sm: "center",
+    }}
+  >
+    {/* Delete Group Button */}
+    <Button
+      size="large"
+      variant="outlined"
+      startIcon={<DeleteIcon />}
+      onClick={openConfirmDeleteHandler}
+      sx={{
+        textTransform: "none",
+        padding: "10px 20px",
+        borderRadius: "12px",
+        color: "white",
+        backgroundColor: "rgba(0, 0, 0, 0.95)",
+        "&:hover": {
+          backgroundColor: "rgba(0, 0, 0, 0.80)",
+        },
       }}
     >
-      <Button
-        size="large"
-        color="error"
-        startIcon={<DeleteIcon />}
-        onClick={openConfirmDeleteHandler}
-      >
-        Delete Group
-      </Button>
-      <Button
-        size="large"
-        variant="contained"
-        startIcon={<AddIcon />}
-        onClick={openAddMemberHandler}
-      >
-        Add Member
-      </Button>
-    </Stack>
-  );
+      Delete Group
+    </Button>
+
+    {/* Add Member Button */}
+    <Button
+      size="large"
+      variant="contained"
+      startIcon={<AddIcon />}
+      onClick={openAddMemberHandler}
+      sx={{
+        textTransform: "none",
+        padding: "10px 20px",
+        borderRadius: "12px",
+        backgroundColor: "white",
+        color: "black",
+        "&:hover": {
+          backgroundColor: "rgba(255, 255, 255, 0.9)",
+        },
+      }}
+    >
+      Add Member
+    </Button>
+  </Stack>
+);
 
   return myGroups.isLoading ? (
     <LayoutLoader />
@@ -385,9 +413,11 @@ const GroupsList = ({ w = "100%", myGroups = [], chatId }) => (
   <Stack
     width={w}
     sx={{
-      backgroundImage: bgGradient,
+      backgroundColor: "rgba(0, 0, 0, 0.85)", // Dark theme background
       height: "100vh",
-      overflow: "auto",
+      overflowY: "auto", // Vertical scroll
+      // padding: "1rem",
+      borderRight: "1px solid rgba(255, 255, 255, 0.1)", // Subtle border for separation
     }}
   >
     {myGroups.length > 0 ? (
@@ -395,12 +425,27 @@ const GroupsList = ({ w = "100%", myGroups = [], chatId }) => (
         <GroupListItem group={group} chatId={chatId} key={group._id} />
       ))
     ) : (
-      <Typography textAlign={"center"} padding="1rem">
-        No groups
-      </Typography>
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100%" // Center "No Groups" text vertically and horizontally
+      >
+        <Typography
+          textAlign="center"
+          sx={{
+            color: "rgba(255, 255, 255, 0.7)",
+            fontSize: "18px",
+            fontWeight: 500,
+          }}
+        >
+          No Groups Available
+        </Typography>
+      </Box>
     )}
   </Stack>
 );
+
 
 const GroupListItem = memo(({ group, chatId }) => {
   const { name, avatar, _id } = group;
@@ -411,11 +456,40 @@ const GroupListItem = memo(({ group, chatId }) => {
       onClick={(e) => {
         if (chatId === _id) e.preventDefault();
       }}
+      style={{
+        textDecoration: "none",
+        backgroundColor: chatId === _id ? "rgba(0, 0, 0, 0.85)" : "unset",
+        hover: "rgba(0, 0, 0, 0.90)",
+        borderBottom: "1px solid rgba(255,255,255,0.10)",
+      }}
     >
-      <Stack direction={"row"} spacing={"1rem"} alignItems={"center"}>
+      <div
+        style={{
+          display: "flex",
+          gap: "1rem",
+          alignItems: "center",
+          color: "white",
+          position: "relative",
+          cursor: "pointer",
+        }}
+      >
+        {/* Avatar */}
         <AvatarCard avatar={avatar} />
-        <Typography>{name}</Typography>
-      </Stack>
+
+        {/* Group Information */}
+        <Stack>
+          <Typography
+            sx={{
+              color: "white",
+              fontSize: "18px",
+              fontWeight: "500",
+              lineHeight: "1.2",
+            }}
+          >
+            {name}
+          </Typography>
+        </Stack>
+      </div>
     </Link>
   );
 });

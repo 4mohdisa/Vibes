@@ -51,42 +51,67 @@ const DeleteChatMenu = ({ dispatch, deleteMenuAnchor }) => {
 
   return (
     <Menu
-      open={isDeleteMenu}
-      onClose={closeHandler}
-      anchorEl={deleteMenuAnchor.current}
-      anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "right",
-      }}
-      transformOrigin={{
-        vertical: "center",
-        horizontal: "center",
-      }}
-    >
-      <Stack
-        sx={{
-          width: "10rem",
-          padding: "0.5rem",
-          cursor: "pointer",
-        }}
-        direction={"row"}
-        alignItems={"center"}
-        spacing={"0.5rem"}
-        onClick={isGroup ? leaveGroupHandler : deleteChatHandler}
-      >
-        {isGroup ? (
-          <>
-            <ExitToAppIcon />
-            <Typography>Leave Group</Typography>
-          </>
-        ) : (
-          <>
-            <DeleteIcon />
-            <Typography>Delete Chat</Typography>
-          </>
-        )}
-      </Stack>
-    </Menu>
+  open={isDeleteMenu}
+  onClose={closeHandler}
+  anchorEl={deleteMenuAnchor.current}
+  anchorOrigin={{
+    vertical: "bottom",
+    horizontal: "right",
+  }}
+  transformOrigin={{
+    vertical: "center",
+    horizontal: "center",
+  }}
+  sx={{
+    "& .MuiPaper-root": {
+      backgroundColor: "white",
+      borderRadius: "12px",
+      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+    },
+  }}
+>
+  <Stack
+    sx={{
+      width: "12rem",
+      padding: "0.55rem",
+      cursor: "pointer",
+      "&:hover": {
+        backgroundColor: "rgba(0, 0, 0, 0.05)",
+        borderRadius: "12px",
+      },
+    }}
+    direction={"row"}
+    alignItems={"center"}
+    spacing={"1rem"}
+    onClick={isGroup ? leaveGroupHandler : deleteChatHandler}
+  >
+    {isGroup ? (
+      <>
+        <ExitToAppIcon sx={{ color: "rgba(0, 0, 0, 0.7)" }} />
+        <Typography
+          sx={{
+            color: "rgba(0, 0, 0, 0.8)",
+            fontWeight: "500",
+          }}
+        >
+          Leave Group
+        </Typography>
+      </>
+    ) : (
+      <>
+        <DeleteIcon sx={{ color: "rgba(255, 0, 0, 0.8)" }} />
+        <Typography
+          sx={{
+            color: "rgba(255, 0, 0, 0.9)",
+            fontWeight: "500",
+          }}
+        >
+          Delete Chat
+        </Typography>
+      </>
+    )}
+  </Stack>
+</Menu>
   );
 };
 

@@ -63,75 +63,135 @@ const FileMenu = ({ anchorE1, chatId }) => {
   };
 
   return (
-    <Menu anchorEl={anchorE1} open={isFileMenu} onClose={closeFileMenu}>
-      <div
-        style={{
-          width: "10rem",
+    <Menu
+  anchorEl={anchorE1}
+  open={isFileMenu}
+  onClose={closeFileMenu}
+  sx={{
+    "& .MuiPaper-root": {
+      backgroundColor: "white",
+      borderRadius: "12px",
+      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+    },
+  }}
+>
+  <div
+    style={{
+      width: "12rem",
+      padding: "0.5rem",
+    }}
+  >
+    <MenuList>
+      <MenuItem
+        onClick={selectImage}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: "1rem",
+          padding: "0.8rem",
+          borderRadius: "8px",
+          "&:hover": {
+            backgroundColor: "rgba(0, 0, 0, 0.05)",
+          },
         }}
       >
-        <MenuList>
-          <MenuItem onClick={selectImage}>
-            <Tooltip title="Image">
-              <ImageIcon />
-            </Tooltip>
-            <ListItemText style={{ marginLeft: "0.5rem" }}>Image</ListItemText>
-            <input
-              type="file"
-              multiple
-              accept="image/png, image/jpeg, image/gif"
-              style={{ display: "none" }}
-              onChange={(e) => fileChangeHandler(e, "Images")}
-              ref={imageRef}
-            />
-          </MenuItem>
+        <Tooltip title="Image">
+          <ImageIcon sx={{ color: "rgba(0, 0, 0, 0.7)" }} />
+        </Tooltip>
+        <ListItemText sx={{ color: "rgba(0, 0, 0, 0.9)" }}>Image</ListItemText>
+        <input
+          type="file"
+          multiple
+          accept="image/png, image/jpeg, image/gif"
+          style={{ display: "none" }}
+          onChange={(e) => fileChangeHandler(e, "Images")}
+          ref={imageRef}
+        />
+      </MenuItem>
 
-          <MenuItem onClick={selectAudio}>
-            <Tooltip title="Audio">
-              <AudioFileIcon />
-            </Tooltip>
-            <ListItemText style={{ marginLeft: "0.5rem" }}>Audio</ListItemText>
-            <input
-              type="file"
-              multiple
-              accept="audio/mpeg, audio/wav"
-              style={{ display: "none" }}
-              onChange={(e) => fileChangeHandler(e, "Audios")}
-              ref={audioRef}
-            />
-          </MenuItem>
+      <MenuItem
+        onClick={selectAudio}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: "1rem",
+          padding: "0.8rem",
+          borderRadius: "8px",
+          "&:hover": {
+            backgroundColor: "rgba(0, 0, 0, 0.05)",
+          },
+        }}
+      >
+        <Tooltip title="Audio">
+          <AudioFileIcon sx={{ color: "rgba(0, 0, 0, 0.7)" }} />
+        </Tooltip>
+        <ListItemText sx={{ color: "rgba(0, 0, 0, 0.9)" }}>Audio</ListItemText>
+        <input
+          type="file"
+          multiple
+          accept="audio/mpeg, audio/wav"
+          style={{ display: "none" }}
+          onChange={(e) => fileChangeHandler(e, "Audios")}
+          ref={audioRef}
+        />
+      </MenuItem>
 
-          <MenuItem onClick={selectVideo}>
-            <Tooltip title="Video">
-              <VideoFileIcon />
-            </Tooltip>
-            <ListItemText style={{ marginLeft: "0.5rem" }}>Video</ListItemText>
-            <input
-              type="file"
-              multiple
-              accept="video/mp4, video/webm, video/ogg"
-              style={{ display: "none" }}
-              onChange={(e) => fileChangeHandler(e, "Videos")}
-              ref={videoRef}
-            />
-          </MenuItem>
+      <MenuItem
+        onClick={selectVideo}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: "1rem",
+          padding: "0.8rem",
+          borderRadius: "8px",
+          "&:hover": {
+            backgroundColor: "rgba(0, 0, 0, 0.05)",
+          },
+        }}
+      >
+        <Tooltip title="Video">
+          <VideoFileIcon sx={{ color: "rgba(0, 0, 0, 0.7)" }} />
+        </Tooltip>
+        <ListItemText sx={{ color: "rgba(0, 0, 0, 0.9)" }}>Video</ListItemText>
+        <input
+          type="file"
+          multiple
+          accept="video/mp4, video/webm, video/ogg"
+          style={{ display: "none" }}
+          onChange={(e) => fileChangeHandler(e, "Videos")}
+          ref={videoRef}
+        />
+      </MenuItem>
 
-          <MenuItem onClick={selectFile}>
-            <Tooltip title="File">
-              <UploadFileIcon />
-            </Tooltip>
-            <ListItemText style={{ marginLeft: "0.5rem" }}>File</ListItemText>
-            <input
-              type="file"
-              multiple
-              accept="*"
-              style={{ display: "none" }}
-              onChange={(e) => fileChangeHandler(e, "Files")}
-              ref={fileRef}
-            />
-          </MenuItem>
-        </MenuList>
-      </div>
-    </Menu>
+      <MenuItem
+        onClick={selectFile}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: "1rem",
+          padding: "0.8rem",
+          borderRadius: "8px",
+          "&:hover": {
+            backgroundColor: "rgba(0, 0, 0, 0.05)",
+          },
+        }}
+      >
+        <Tooltip title="File">
+          <UploadFileIcon sx={{ color: "rgba(0, 0, 0, 0.7)" }} />
+        </Tooltip>
+        <ListItemText sx={{ color: "rgba(0, 0, 0, 0.9)" }}>File</ListItemText>
+        <input
+          type="file"
+          multiple
+          accept="*"
+          style={{ display: "none" }}
+          onChange={(e) => fileChangeHandler(e, "Files")}
+          ref={fileRef}
+        />
+      </MenuItem>
+    </MenuList>
+  </div>
+</Menu>
   );
 };
 

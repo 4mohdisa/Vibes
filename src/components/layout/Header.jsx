@@ -124,7 +124,8 @@ const Header = () => {
                 component="img"
                 src="/logo.svg"
                 alt="Logo"
-                sx={{ height: 80 }}
+                sx={{ height: 60, cursor: "pointer" }}
+                onClick={() => navigate("/")}
               />
             </Box>
 

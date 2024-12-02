@@ -47,45 +47,94 @@ const AddMemberDialog = ({ chatId }) => {
 
   useErrors([{ isError, error }]);
   return (
-    <Dialog open={isAddMember} onClose={closeHandler}>
-      <Stack p={"2rem"} width={"20rem"} spacing={"2rem"}>
-        <DialogTitle textAlign={"center"}>Add Member</DialogTitle>
+    <Dialog
+  open={isAddMember}
+  onClose={closeHandler}
+  PaperProps={{
+    sx: {
+      backgroundColor: "white", // White background for the dialog
+      borderRadius: "12px", // Rounded corners for the dialog
+      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.3)", // Subtle shadow for the dialog
+    },
+  }}
+>
+  <Stack p={"2rem"} width={"20rem"} spacing={"2rem"}>
+    <DialogTitle
+      textAlign={"center"}
+      sx={{
+        color: "black", // Black text for title
+        fontWeight: "600",
+        borderBottom: "1px solid rgba(0, 0, 0, 0.1)", // Border bottom for separation
+      }}
+    >
+      Add Member
+    </DialogTitle>
 
-        <Stack spacing={"1rem"}>
-          {isLoading ? (
-            <Skeleton />
-          ) : data?.friends?.length > 0 ? (
-            data?.friends?.map((i) => (
-              <UserItem
-                key={i._id}
-                user={i}
-                handler={selectMemberHandler}
-                isAdded={selectedMembers.includes(i._id)}
-              />
-            ))
-          ) : (
-            <Typography textAlign={"center"}>No Friends</Typography>
-          )}
-        </Stack>
+    <Stack spacing={"1rem"}>
+      {isLoading ? (
+        <Skeleton variant="rectangular" height={50} />
+      ) : data?.friends?.length > 0 ? (
+        data?.friends?.map((i) => (
+          <UserItem
+            key={i._id}
+            user={i}
+            handler={selectMemberHandler}
+            isAdded={selectedMembers.includes(i._id)}
+          />
+        ))
+      ) : (
+        <Typography textAlign={"center"} sx={{ color: "rgba(0, 0, 0, 0.6)" }}>
+          No Friends
+        </Typography>
+      )}
+    </Stack>
 
-        <Stack
-          direction={"row"}
-          alignItems={"center"}
-          justifyContent={"space-evenly"}
-        >
-          <Button color="error" onClick={closeHandler}>
-            Cancel
-          </Button>
-          <Button
-            onClick={addMemberSubmitHandler}
-            variant="contained"
-            disabled={isLoadingAddMembers}
-          >
-            Submit Changes
-          </Button>
-        </Stack>
-      </Stack>
-    </Dialog>
+    <Stack
+      direction={"row"}
+      alignItems={"center"}
+      justifyContent={"space-evenly"}
+      spacing={2}
+    >
+      {/* Cancel Button */}
+      <Button
+        color="error"
+        onClick={closeHandler}
+        sx={{
+          textTransform: "none",
+          borderRadius: "8px",
+          padding: "10px 20px",
+          border: "1px solid rgba(255, 0, 0, 0.7)",
+          color: "rgba(255, 0, 0, 0.8)",
+          "&:hover": {
+            backgroundColor: "rgba(255, 0, 0, 0.1)",
+          },
+        }}
+        variant="outlined"
+      >
+        Cancel
+      </Button>
+
+      {/* Submit Changes Button */}
+      <Button
+        onClick={addMemberSubmitHandler}
+        variant="contained"
+        disabled={isLoadingAddMembers}
+        sx={{
+          textTransform: "none",
+          borderRadius: "8px",
+          padding: "10px 20px",
+          backgroundColor: "black",
+          color: "white",
+          "&:hover": {
+            backgroundColor: "rgba(0, 0, 0, 0.9)",
+          },
+        }}
+      >
+        Submit Changes
+      </Button>
+    </Stack>
+  </Stack>
+</Dialog>
   );
 };
 
