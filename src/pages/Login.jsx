@@ -161,7 +161,7 @@ const Login = () => {
                     style: { height: '40px', borderColor: 'black' },
                   }}
                   InputLabelProps={{
-                    style: { color: 'black' },
+                    style: { color: 'rgba(0,0,0,0.7)', fontSize: '1rem' },
                   }}
                 />
 
@@ -178,7 +178,7 @@ const Login = () => {
                     style: { height: '40px', borderColor: 'black' },
                   }}
                   InputLabelProps={{
-                    style: { color: 'black' },
+                    style: { color: 'rgba(0,0,0,0.7)', fontSize: '1rem' },
                   }}
                 />
 
@@ -282,7 +282,7 @@ const Login = () => {
                     style: { height: '40px', borderColor: 'black' },
                   }}
                   InputLabelProps={{
-                    style: { color: 'black' },
+                    style: { color: 'rgba(0,0,0,0.7)', fontSize: '1rem' },
                   }}
                 />
 
@@ -298,7 +298,7 @@ const Login = () => {
                     style: { height: '40px', borderColor: 'black' },
                   }}
                   InputLabelProps={{
-                    style: { color: 'black' },
+                    style: { color: 'rgba(0,0,0,0.7)', fontSize: '1rem' },
                   }}
                 />
                 <TextField
@@ -313,7 +313,7 @@ const Login = () => {
                     style: { height: '40px', borderColor: 'black' },
                   }}
                   InputLabelProps={{
-                    style: { color: 'black' },
+                    style: { color: 'rgba(0,0,0,0.7)', fontSize: '1rem' },
                   }}
                 />
 
@@ -336,7 +336,7 @@ const Login = () => {
                     style: { height: '40px', borderColor: 'black' },
                   }}
                   InputLabelProps={{
-                    style: { color: 'black' },
+                    style: { color: 'rgba(0,0,0,0.7)', fontSize: '1rem' },
                   }}
                 />
 
