@@ -1,5 +1,5 @@
 import { useFetchData } from "6pp";
-import { Avatar, Skeleton, Stack } from "@mui/material";
+import { Avatar, Skeleton, Stack, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import AdminLayout from "../../components/layout/AdminLayout";
 import AvatarCard from "../../components/shared/AvatarCard";
@@ -20,21 +20,40 @@ const columns = [
     headerName: "Avatar",
     headerClassName: "table-header",
     width: 150,
-    renderCell: (params) => <AvatarCard avatar={params.row.avatar} />,
+    renderCell: (params) => (
+      <AvatarCard
+        avatar={params.row.avatar}
+        sx={{
+          width: 40,
+          height: 40,
+          boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.2)", // Subtle shadow
+        }}
+      />
+    ),
   },
-
   {
     field: "name",
     headerName: "Name",
     headerClassName: "table-header",
     width: 300,
   },
-
   {
     field: "groupChat",
-    headerName: "Group",
+    headerName: "Group Chat",
     headerClassName: "table-header",
     width: 100,
+    align: "center",
+    renderCell: (params) => (
+      <Typography
+        sx={{
+          fontSize: "0.9rem",
+          fontWeight: "bold",
+          color: params.row.groupChat ? "#28a745" : "#dc3545", // Green for true, red for false
+        }}
+      >
+        {params.row.groupChat ? "Yes" : "No"}
+      </Typography>
+    ),
   },
   {
     field: "totalMembers",
@@ -48,14 +67,23 @@ const columns = [
     headerClassName: "table-header",
     width: 400,
     renderCell: (params) => (
-      <AvatarCard max={100} avatar={params.row.members} />
+      <AvatarCard
+        max={5} // Show up to 5 avatars
+        avatar={params.row.members}
+        sx={{
+          display: "flex",
+          gap: "0.5rem",
+          width: "fit-content",
+        }}
+      />
     ),
   },
   {
     field: "totalMessages",
     headerName: "Total Messages",
     headerClassName: "table-header",
-    width: 120,
+    width: 150,
+    align: "center",
   },
   {
     field: "creator",
@@ -63,9 +91,19 @@ const columns = [
     headerClassName: "table-header",
     width: 250,
     renderCell: (params) => (
-      <Stack direction="row" alignItems="center" spacing={"1rem"}>
-        <Avatar alt={params.row.creator.name} src={params.row.creator.avatar} />
-        <span>{params.row.creator.name}</span>
+      <Stack direction="row" alignItems="center" spacing={1}>
+        <Avatar
+          alt={params.row.creator.name}
+          src={params.row.creator.avatar}
+          sx={{
+            width: 40,
+            height: 40,
+            boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.1)",
+          }}
+        />
+        <Typography sx={{ fontSize: "0.9rem", fontWeight: "500" }}>
+          {params.row.creator.name}
+        </Typography>
       </Stack>
     ),
   },
@@ -89,14 +127,16 @@ const ChatManagement = () => {
   useEffect(() => {
     if (data) {
       setRows(
-        data.chats.map((i) => ({
-          ...i,
-          id: i._id,
-          avatar: i.avatar.map((i) => transformImage(i, 50)),
-          members: i.members.map((i) => transformImage(i.avatar, 50)),
+        data.chats.map((chat) => ({
+          ...chat,
+          id: chat._id,
+          avatar: chat.avatar.map((avatar) => transformImage(avatar, 50)),
+          members: chat.members.map((member) =>
+            transformImage(member.avatar, 50)
+          ),
           creator: {
-            name: i.creator.name,
-            avatar: transformImage(i.creator.avatar, 50),
+            name: chat.creator.name,
+            avatar: transformImage(chat.creator.avatar, 50),
           },
         }))
       );
@@ -106,9 +146,32 @@ const ChatManagement = () => {
   return (
     <AdminLayout>
       {loading ? (
-        <Skeleton height={"100vh"} />
+        <Skeleton
+          variant="rectangular"
+          height="100vh"
+          sx={{
+            borderRadius: "16px",
+            bgcolor: "rgba(0, 0, 0, 0.05)", // Light gray background
+          }}
+        />
       ) : (
-        <Table heading={"All Chats"} columns={columns} rows={rows} />
+        <Table
+          heading="All Chats"
+          columns={columns}
+          rows={rows}
+          rowHeight={100}
+          sx={{
+            backgroundColor: "white", // White background for the table
+            borderRadius: "16px",
+            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)", // Subtle shadow
+            padding: "1rem",
+          }}
+          headerStyles={{
+            backgroundColor: "#f5f5f5", // Light gray header background
+            color: "black", // Black header text
+            fontWeight: "bold",
+          }}
+        />
       )}
     </AdminLayout>
   );

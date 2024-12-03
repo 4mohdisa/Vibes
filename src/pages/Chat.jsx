@@ -6,13 +6,11 @@ import React, {
   useState,
 } from "react";
 import AppLayout from "../components/layout/AppLayout";
-import { IconButton, Skeleton, Stack } from "@mui/material";
-import { grayColor, orange } from "../constants/color";
+import { IconButton, Skeleton, Stack, Typography } from "@mui/material";
 import {
   AttachFile as AttachFileIcon,
   Send as SendIcon,
 } from "@mui/icons-material";
-import { InputBox } from "../components/styles/StyledComponents";
 import FileMenu from "../components/dialogs/FileMenu";
 import MessageComponent from "../components/shared/MessageComponent";
 import { getSocket } from "../socket";
@@ -184,24 +182,48 @@ const Chat = ({ chatId, user }) => {
   ) : (
     <Fragment>
       <Stack
-        ref={containerRef}
-        boxSizing={"border-box"}
-        padding={"1rem"}
-        spacing={"1rem"}
-        bgcolor={"rgba(0,0,0,0.90)"}
-        height={"90%"}
-        sx={{
-          overflowX: "hidden",
-          overflowY: "auto",
-        }}
+  ref={containerRef}
+  boxSizing={"border-box"}
+  padding={"1rem"}
+  spacing={"1rem"}
+  sx={{
+    height: "90%",
+    overflowX: "hidden",
+    overflowY: "auto",
+    backgroundImage: `url("/chat-background.png")`,
+    backgroundColor: "rgba(0, 0, 0, 0.90)",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    position: "relative",
+  }}
       >
-        {allMessages.map((i) => (
-          <MessageComponent key={i._id} message={i} user={user} />
-        ))}
+  {/* Display this message if there are no messages */}
+  {allMessages.length === 0 && (
+    <Typography
+      sx={{
+        position: "absolute",
+        top: "10%",
+        left: "50%",
+        transform: "translateX(-50%)",
+        color: "rgba(255, 255, 255, 0.5)", // Light black color
+        fontSize: "1.2rem",
+        textAlign: "center",
+        fontWeight: "500",
+      }}
+    >
+      {chatDetails?.data?.chat?.isGroup
+        ? `Start chat in ${chatDetails?.data?.chat?.name}`
+        : `Chat with ${chatDetails?.data?.chat?.name}`}
+    </Typography>
+  )}
 
-        {userTyping && <TypingLoader />}
+  {allMessages.map((i) => (
+    <MessageComponent key={i._id} message={i} user={user} />
+  ))}
 
-        <div ref={bottomRef} />
+  {userTyping && <TypingLoader />}
+
+  <div ref={bottomRef} />
       </Stack>
 
       <form

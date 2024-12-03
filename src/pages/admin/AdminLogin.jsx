@@ -1,30 +1,24 @@
-import { useInputValidation } from "6pp";
-import {
-  Button,
-  Container,
-  Paper,
-  TextField,
-  Typography
-} from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
-import { bgGradient } from "../../constants/color";
+import { Container, Paper, TextField, Typography, Button } from "@mui/material";
 import { adminLogin, getAdmin } from "../../redux/thunks/admin";
 
 const AdminLogin = () => {
   const { isAdmin } = useSelector((state) => state.auth);
-
   const dispatch = useDispatch();
 
-  const secretKey = useInputValidation("");
+  const [secretKey, setSecretKey] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const submitHandler = (e) => {
     e.preventDefault();
-    dispatch(adminLogin(secretKey.value));
+    setIsLoading(true);
+    dispatch(adminLogin(secretKey)).finally(() => setIsLoading(false));
   };
 
   useEffect(() => {
+    console.log("Dispatching getAdmin");
     dispatch(getAdmin());
   }, [dispatch]);
 
@@ -33,7 +27,10 @@ const AdminLogin = () => {
   return (
     <div
       style={{
-        backgroundImage: bgGradient,
+        backgroundImage: "url('/Abstract-Background-min.jpg')",
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat",
+        height: "100vh",
       }}
     >
       <Container
@@ -53,13 +50,24 @@ const AdminLogin = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            borderRadius: "16px",
           }}
         >
-          <Typography variant="h5">Admin Login</Typography>
+          <img
+            src="/logo-black.svg"
+            alt="Logo"
+            style={{ width: "100px", marginBottom: "1rem" }}
+          />
+          <Typography
+            variant="h5"
+            style={{ color: "black", marginBottom: "1rem" }}
+          >
+            Admin Login
+          </Typography>
           <form
             style={{
               width: "100%",
-              marginTop: "1rem",
+              marginTop: "0.5rem",
             }}
             onSubmit={submitHandler}
           >
@@ -68,22 +76,34 @@ const AdminLogin = () => {
               fullWidth
               label="Secret Key"
               type="password"
-              margin="normal"
+              margin="dense"
               variant="outlined"
-              value={secretKey.value}
-              onChange={secretKey.changeHandler}
+              value={secretKey}
+              onChange={(e) => setSecretKey(e.target.value)}
+              InputProps={{
+                style: { height: "40px", borderColor: "black" },
+              }}
+              InputLabelProps={{
+                style: { color: "rgba(0,0,0,0.7)", fontSize: "1rem" },
+              }}
             />
 
             <Button
               sx={{
                 marginTop: "1rem",
+                bgcolor: "black",
+                color: "white",
+                "&:hover": {
+                  bgcolor: "grey",
+                },
+                borderRadius: "8px",
               }}
               variant="contained"
-              color="primary"
               type="submit"
               fullWidth
+              disabled={isLoading}
             >
-              Login
+              {isLoading ? "Loading..." : "Login"}
             </Button>
           </form>
         </Paper>

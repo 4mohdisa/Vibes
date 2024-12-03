@@ -64,36 +64,73 @@ const Sidebar = ({ w = "100%" }) => {
   };
 
   return (
-    <Stack width={w} direction={"column"} p={"3rem"} spacing={"3rem"}>
-      <Typography variant="h5" textTransform={"uppercase"}>
-        Vibes
-      </Typography>
+    <Stack
+      width={w}
+      direction="column"
+      p="2rem"
+      spacing="2rem"
+      sx={{
+        backgroundColor: "black", // Black background for the sidebar
+        height: "100vh", // Full height
+        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)", // Subtle shadow
+      }}
+    >
+      {/* Logo */}
+      <Box
+        component="img"
+        src="/logo.svg"
+        alt="Logo"
+        sx={{
+          width: "100px",
+          height: "auto",
+          alignSelf: "center",
+          marginBottom: "1rem",
+        }}
+      />
 
-      <Stack spacing={"1rem"}>
+      {/* Sidebar Options */}
+      <Stack spacing="1.5rem">
         {adminTabs.map((tab) => (
           <Link
             key={tab.path}
             to={tab.path}
-            sx={
-              location.pathname === tab.path && {
-                bgcolor: matBlack,
-                color: "white",
-                ":hover": { color: "white" },
-              }
-            }
+            style={{
+              textDecoration: "none",
+              color: location.pathname === tab.path ? "black" : "white",
+              backgroundColor: location.pathname === tab.path ? "white" : "transparent",
+              padding: "0.8rem 1.2rem",
+              borderRadius: "8px", // Rounded corners for selected items
+              transition: "all 0.3s ease",
+            }}
           >
-            <Stack direction={"row"} alignItems={"center"} spacing={"1rem"}>
+            <Stack direction="row" alignItems="center" spacing="1rem">
               {tab.icon}
-
-              <Typography>{tab.name}</Typography>
+              <Typography
+                sx={{
+                  fontSize: "1rem",
+                  fontWeight: location.pathname === tab.path ? "bold" : "normal",
+                }}
+              >
+                {tab.name}
+              </Typography>
             </Stack>
           </Link>
         ))}
 
-        <Link onClick={logoutHandler}>
-          <Stack direction={"row"} alignItems={"center"} spacing={"1rem"}>
+        {/* Logout Option */}
+        <Link
+          onClick={logoutHandler}
+          style={{
+            textDecoration: "none",
+            color: "white",
+            padding: "0.8rem 1.2rem",
+            borderRadius: "8px",
+            transition: "all 0.3s ease",
+            cursor: "pointer",
+          }}
+        >
+          <Stack direction="row" alignItems="center" spacing="1rem">
             <ExitToAppIcon />
-
             <Typography>Logout</Typography>
           </Stack>
         </Link>

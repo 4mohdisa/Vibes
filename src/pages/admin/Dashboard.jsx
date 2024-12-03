@@ -44,30 +44,91 @@ const Dashboard = () => {
   const Appbar = (
     <Paper
       elevation={3}
-      sx={{ padding: "2rem", margin: "2rem 0", borderRadius: "1rem" }}
+      sx={{
+        padding: "1.5rem",
+        margin: "2rem 0",
+        borderRadius: "16px",
+        backgroundColor: "white", // White background
+        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)", // Subtle shadow
+      }}
     >
-      <Stack direction={"row"} alignItems={"center"} spacing={"1rem"}>
-        <AdminPanelSettingsIcon sx={{ fontSize: "3rem" }} />
-
-        <SearchField placeholder="Search..." />
-
-        <CurveButton>Search</CurveButton>
+      <Stack
+        direction={"row"}
+        alignItems={"center"}
+        spacing={"1rem"}
+        justifyContent={"space-between"}
+      >
+        {/* Admin Icon */}
+        <AdminPanelSettingsIcon
+          sx={{
+            fontSize: "3rem",
+            color: "black", // Black icon color
+          }}
+        />
+  
+        {/* Search Field */}
+        <SearchField
+          placeholder="Search..."
+          sx={{
+            width: "100%",
+            maxWidth: "400px", // Restrict search bar width
+            backgroundColor: "rgba(0, 0, 0, 0.1)", // Light gray background
+            borderRadius: "8px",
+            padding: "0.5rem 1rem",
+            color: "black", // Black text
+            "::placeholder": {
+              color: "rgba(0, 0, 0, 0.6)", // Subtle placeholder color
+            },
+          }}
+        />
+  
+        {/* Search Button */}
+        <CurveButton
+          sx={{
+            backgroundColor: "black", // Black button background
+            color: "white", // White text color
+            borderRadius: "8px", // Rounded button
+            padding: "0.5rem 1rem",
+            ":hover": {
+              backgroundColor: "rgba(0, 0, 0, 0.8)", // Slightly lighter hover effect
+            },
+          }}
+        >
+          Search
+        </CurveButton>
+  
         <Box flexGrow={1} />
+  
+        {/* Date Display */}
         <Typography
           display={{
             xs: "none",
             lg: "block",
           }}
-          color={"rgba(0,0,0,0.7)"}
+          sx={{
+            color: "black", // Black text
+            fontSize: "1rem",
+          }}
           textAlign={"center"}
         >
           {moment().format("dddd, D MMMM YYYY")}
         </Typography>
-
-        <NotificationsIcon />
+  
+        {/* Notifications Icon */}
+        <NotificationsIcon
+          sx={{
+            fontSize: "2rem",
+            color: "black", // Black icon color
+            ":hover": {
+              color: "rgba(0, 0, 0, 0.8)", // Slightly lighter hover effect
+            },
+          }}
+        />
       </Stack>
     </Paper>
   );
+  
+
 
   const Widgets = (
     <Stack
@@ -76,101 +137,147 @@ const Dashboard = () => {
         sm: "row",
       }}
       spacing="2rem"
-      justifyContent="space-between"
-      alignItems={"center"}
-      margin={"2rem 0"}
+      justifyContent="space-evenly"
+      alignItems="center"
+      sx={{
+        margin: "2rem 0",
+        padding: "1rem",
+      }}
     >
-      <Widget title={"Users"} value={stats?.usersCount} Icon={<PersonIcon />} />
+      <Widget
+        title={"Users"}
+        value={stats?.usersCount}
+        Icon={<PersonIcon sx={{ fontSize: "3rem", color: "black" }} />}
+      />
       <Widget
         title={"Chats"}
         value={stats?.totalChatsCount}
-        Icon={<GroupIcon />}
+        Icon={<GroupIcon sx={{ fontSize: "3rem", color: "black" }} />}
       />
       <Widget
         title={"Messages"}
         value={stats?.messagesCount}
-        Icon={<MessageIcon />}
+        Icon={<MessageIcon sx={{ fontSize: "3rem", color: "black" }} />}
       />
     </Stack>
   );
 
   return (
     <AdminLayout>
-      {loading ? (
-        <Skeleton height={"100vh"} />
-      ) : (
-        <Container component={"main"}>
-          {Appbar}
+  {loading ? (
+    <Skeleton
+      height={"100vh"}
+      sx={{
+        bgcolor: "rgba(255,255,255,0.08)",
+      }}
+    />
+  ) : (
+    <Container
+      component={"main"}
+      sx={{
+        bgcolor: "rgba(255,255,255, 1)", // Dark background for the layout
+        borderRadius: "16px",
+        padding: "2rem",
+        color: "white", // White text for better contrast
+      }}
+    >
+      {/* Appbar */}
+      {Appbar}
+
+      {/* Main Section */}
+      <Stack
+        direction={{
+          xs: "column",
+          lg: "row",
+        }}
+        flexWrap={"wrap"}
+        justifyContent={"center"}
+        alignItems={{
+          xs: "center",
+          lg: "stretch",
+        }}
+        sx={{ gap: "2rem" }}
+      >
+        {/* Last Messages */}
+        <Paper
+          elevation={3}
+          sx={{
+            backgroundColor: "rgba(255, 255, 255, 0.08)", // Slightly transparent background
+            padding: "2rem 3.5rem",
+            borderRadius: "1rem",
+            color: "white", // Ensure text color is white
+            width: "100%",
+            maxWidth: "45rem",
+            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)", // Subtle shadow
+          }}
+        >
+          <Typography
+            margin={"2rem 0"}
+            variant="h4"
+            sx={{
+              fontWeight: "bold",
+              color: "white", // White text
+            }}
+          >
+            Last Messages
+          </Typography>
+
+          <LineChart value={stats?.messagesChart || []} />
+        </Paper>
+
+        {/* Doughnut Chart */}
+        <Paper
+          elevation={3}
+          sx={{
+            backgroundColor: "rgba(255, 255, 255, 0.08)",
+            padding: "1rem",
+            borderRadius: "1rem",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            width: { xs: "100%", sm: "50%" },
+            position: "relative",
+            maxWidth: "25rem",
+            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
+          }}
+        >
+          <DoughnutChart
+            labels={["Single Chats", "Group Chats"]}
+            value={[
+              stats?.totalChatsCount - stats?.groupsCount || 0,
+              stats?.groupsCount || 0,
+            ]}
+          />
 
           <Stack
-            direction={{
-              xs: "column",
-              lg: "row",
-            }}
-            flexWrap={"wrap"}
+            position={"absolute"}
+            direction={"row"}
             justifyContent={"center"}
-            alignItems={{
-              xs: "center",
-              lg: "stretch",
-            }}
-            sx={{ gap: "2rem" }}
+            alignItems={"center"}
+            spacing={"0.5rem"}
+            width={"100%"}
+            height={"100%"}
           >
-            <Paper
-              elevation={3}
+            <GroupIcon sx={{ color: "white", fontSize: "1.5rem" }} />
+            <Typography
               sx={{
-                padding: "2rem 3.5rem",
-                borderRadius: "1rem",
-                width: "100%",
-                maxWidth: "45rem",
+                color: "white",
+                fontWeight: "bold",
               }}
             >
-              <Typography margin={"2rem 0"} variant="h4">
-                Last Messages
-              </Typography>
-
-              <LineChart value={stats?.messagesChart || []} />
-            </Paper>
-
-            <Paper
-              elevation={3}
-              sx={{
-                padding: "1rem ",
-                borderRadius: "1rem",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                width: { xs: "100%", sm: "50%" },
-                position: "relative",
-                maxWidth: "25rem",
-              }}
-            >
-              <DoughnutChart
-                labels={["Single Chats", "Group Chats"]}
-                value={[
-                  stats?.totalChatsCount - stats?.groupsCount || 0,
-                  stats?.groupsCount || 0,
-                ]}
-              />
-
-              <Stack
-                position={"absolute"}
-                direction={"row"}
-                justifyContent={"center"}
-                alignItems={"center"}
-                spacing={"0.5rem"}
-                width={"100%"}
-                height={"100%"}
-              >
-                <GroupIcon /> <Typography>Vs </Typography>
-                <PersonIcon />
-              </Stack>
-            </Paper>
+              Vs
+            </Typography>
+            <PersonIcon sx={{ color: "white", fontSize: "1.5rem" }} />
           </Stack>
+        </Paper>
+      </Stack>
 
-          {Widgets}
-        </Container>
-      )}
-    </AdminLayout>
+      {/* Widgets Section */}
+      {Widgets}
+    </Container>
+  )}
+</AdminLayout>
+
   );
 };
 
@@ -178,33 +285,59 @@ const Widget = ({ title, value, Icon }) => (
   <Paper
     elevation={3}
     sx={{
+      backgroundColor: "white", // Pure white background for the widget
+      color: "black", // Text color for white background
       padding: "2rem",
-      margin: "2rem 0",
-      borderRadius: "1.5rem",
-      width: "20rem",
+      borderRadius: "16px", // Rounded corners
+      textAlign: "center",
+      width: "100%",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: "1rem",
+      boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.3)", // Subtle shadow effect for contrast
     }}
   >
-    <Stack alignItems={"center"} spacing={"1rem"}>
-      <Typography
-        sx={{
-          color: "rgba(0,0,0,0.7)",
-          borderRadius: "50%",
-          border: `5px solid ${matBlack}`,
-          width: "5rem",
-          height: "5rem",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        {value}
-      </Typography>
-      <Stack direction={"row"} spacing={"1rem"} alignItems={"center"}>
-        {Icon}
-        <Typography>{title}</Typography>
-      </Stack>
-    </Stack>
+    {/* Icon */}
+    <Box
+      sx={{
+        width: "4rem",
+        height: "4rem",
+        borderRadius: "50%",
+        backgroundColor: "rgba(0, 0, 0, 0.05)", // Light gray background for the icon
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        color: "black", // Icon color
+        fontSize: "1.8rem",
+      }}
+    >
+      {Icon}
+    </Box>
+
+    {/* Value */}
+    <Typography
+      sx={{
+        fontSize: "2rem",
+        fontWeight: "bold",
+        color: "black", // Main text color
+      }}
+    >
+      {value || 0}
+    </Typography>
+
+    {/* Title */}
+    <Typography
+      sx={{
+        fontSize: "1rem",
+        fontWeight: "500",
+        color: "rgba(0, 0, 0, 0.7)", // Subtle dark gray for title
+      }}
+    >
+      {title}
+    </Typography>
   </Paper>
 );
+
 
 export default Dashboard;
