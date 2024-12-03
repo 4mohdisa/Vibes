@@ -8,6 +8,6 @@ const corsOptions = {
   credentials: true,
 };
 
-const CHATTU_TOKEN = "vibes-token";
+const CHATTU_TOKEN = "chattu-token";
 
 export { corsOptions, CHATTU_TOKEN };
