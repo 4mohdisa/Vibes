@@ -9,6 +9,7 @@ import {
   Typography,
   Stack,
   CircularProgress,
+  Avatar
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -53,19 +54,26 @@ const Header = () => {
     (member) => member._id !== user?._id
   );
 
+  const transformImage = (image) => {
+    if (!image) return null;
+    if (typeof image === 'string') return image;
+    return URL.createObjectURL(image);
+  }
+
   const currentChat = chatData?.chat
     ? {
         avatar: chatData.chat.groupChat
-          ? Array.isArray(chatData.chat.avatar)
-            ? chatData.chat.avatar
-            : [chatData.chat.avatar].filter(Boolean)
-          : Array.isArray(otherUser?.avatar)
-          ? otherUser.avatar
-          : [otherUser?.avatar].filter(Boolean),
+          ? chatData.chat.members.map(member => ({
+              src: transformImage(member.avatar),
+              alt: member.name
+            })).slice(0, 3)  // Show max 3 avatars for groups
+          : [{ 
+              src: transformImage(otherUser?.avatar),
+              alt: otherUser?.name
+            }],
         name: chatData.chat.groupChat
           ? chatData.chat.name
           : otherUser?.name || "",
-        username: !chatData.chat.groupChat ? otherUser?.username || "" : "",
         groupChat: chatData.chat.groupChat,
       }
     : null;
@@ -141,16 +149,27 @@ const Header = () => {
                   paddingLeft: 0,
                 }}
               >
-                <AvatarCard avatar={currentChat.avatar} />
-                <Stack>
+                {currentChat?.avatar && (
+                  <Stack direction="row" spacing={-1}>
+                    {currentChat.avatar.map((avatar, index) => (
+                      <Avatar
+                        key={index}
+                        src={avatar.src}
+                        alt={avatar.alt}
+                        sx={{
+                          width: 40,
+                          height: 40,
+                          border: "2px solid white",
+                          bgcolor: "grey.300"
+                        }}
+                      />
+                    ))}
+                  </Stack>
+                )}
+                <Stack sx={{ ml: 2 }}>
                   <Typography variant="h6" fontWeight={600}>
-                    {currentChat.name}
+                    {currentChat?.name || ""}
                   </Typography>
-                  {!currentChat.groupChat && currentChat.username && (
-                    <Typography variant="subtitle2" color="text.secondary">
-                      @{currentChat.username}
-                    </Typography>
-                  )}
                 </Stack>
               </Stack>
             )}

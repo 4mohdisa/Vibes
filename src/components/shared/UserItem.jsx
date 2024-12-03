@@ -1,49 +1,76 @@
-import { Button, ListItem, Stack, Typography, Avatar } from "@mui/material";
-import React, { memo, useState } from "react";
+import { Add as AddIcon, Remove as RemoveIcon } from "@mui/icons-material";
+import { Avatar, IconButton, ListItem, Stack, Typography } from "@mui/material";
+import React, { memo } from "react";
+import { transformImage } from "../../lib/features";
 
-const UserItem = ({ user, handler, isAdded = false }) => {
-  const { name, avatar } = user;
-  const [added, setAdded] = useState(isAdded);
-
-  const handleAddClick = () => {
-    handler();
-    setAdded(true);
-  };
+const UserItem = ({
+  user,
+  handler,
+  handlerIsLoading,
+  isAdded = false,
+  styling = {},
+}) => {
+  const { name, _id, avatar } = user;
 
   return (
     <ListItem
       sx={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "1rem",
+        padding: "10px 16px",
         borderRadius: "8px",
-        boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-        bgcolor: "rgba(0, 0, 0, 0.05)",
+        backgroundColor: "white",
+        boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
+        "&:hover": {
+          backgroundColor: "#f9f9f9",
+        },
+        ...styling,
       }}
     >
-      <Stack direction="row" alignItems="center" spacing={2}>
-        <Avatar src={avatar} alt={name} />
-        <Typography sx={{ fontWeight: 500, color: "rgba(0, 0, 0, 0.8)" }}>
+      <Stack
+        direction={"row"}
+        alignItems={"center"}
+        spacing={"1rem"}
+        width={"100%"}
+      >
+        {/* Avatar */}
+        <Avatar
+          src={transformImage(avatar)}
+          alt={name}
+          sx={{ width: 40, height: 40 }}
+        />
+
+        {/* User Name */}
+        <Typography
+          variant="body1"
+          sx={{
+            flexGrow: 1,
+            fontWeight: "bold",
+            color: "black",
+            display: "-webkit-box",
+            WebkitLineClamp: 1,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
           {name}
         </Typography>
+
+        {/* Action Button */}
+        <IconButton
+          size="small"
+          sx={{
+            bgcolor: isAdded ? "error.main" : "primary.main",
+            color: "white",
+            "&:hover": {
+              bgcolor: isAdded ? "error.dark" : "primary.dark",
+            },
+          }}
+          onClick={() => handler(_id)}
+          disabled={handlerIsLoading}
+        >
+          {isAdded ? <RemoveIcon /> : <AddIcon />}
+        </IconButton>
       </Stack>
-      <Button
-        variant={added ? "outlined" : "contained"}
-        onClick={handleAddClick}
-        disabled={added}
-        sx={{
-          borderRadius: "16px",
-          textTransform: "none",
-          bgcolor: added ? "transparent" : "primary.main",
-          color: added ? "gray" : "white",
-          "&:hover": {
-            bgcolor: added ? "transparent" : "primary.dark",
-          },
-        }}
-      >
-        {added ? "Added" : "Add"}
-      </Button>
     </ListItem>
   );
 };
