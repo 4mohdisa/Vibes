@@ -12,21 +12,31 @@ import {
   uploadFilesToCloudinary,
 } from "../utils/features.js";
 import { ErrorHandler } from "../utils/utility.js";
+import path from "path";
+import { fileURLToPath } from "url";
 
-// Create a new user and save it to the database and save token in cookie
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const newUser = TryCatch(async (req, res, next) => {
   const { name, username, password, bio } = req.body;
 
   const file = req.file;
+  let avatar;
 
-  if (!file) return next(new ErrorHandler("Please Upload Avatar"));
-
-  const result = await uploadFilesToCloudinary([file]);
-
-  const avatar = {
-    public_id: result[0].public_id,
-    url: result[0].url,
-  };
+  if (file) {
+    const result = await uploadFilesToCloudinary([file]);
+    avatar = {
+      public_id: result[0].public_id,
+      url: result[0].url,
+    };
+  } else {
+    // Set default avatar
+    avatar = {
+      public_id: "default-profile",
+      url: path.join(__dirname, "../assets/default-profile.png"),
+    };
+  }
 
   const user = await User.create({
     name,
@@ -69,7 +79,7 @@ const getMyProfile = TryCatch(async (req, res, next) => {
 const logout = TryCatch(async (req, res) => {
   return res
     .status(200)
-    .cookie("chattu-token", "", { ...cookieOptions, maxAge: 0 })
+    .cookie("vibes-token", "", { ...cookieOptions, maxAge: 0 })
     .json({
       success: true,
       message: "Logged out successfully",
