@@ -225,7 +225,7 @@ const Chat = ({ chatId, user }) => {
 
         {userTyping && (
           <MessageComponent
-            message={{ content: "Typing...", sender: { name: user.name  } }}
+            message={{ content: "Typing...", sender: { } }}
             user={user}
             isTyping
           />
