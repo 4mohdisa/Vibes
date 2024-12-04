@@ -5,15 +5,14 @@ import { v2 as cloudinary } from "cloudinary";
 import { getBase64, getSockets } from "../lib/helper.js";
 
 const cookieOptions = {
-  maxAge: 15 * 24 * 60 * 60 * 1000,
-  sameSite: "none",
+  maxAge: 15 * 24 * 60 * 60 * 1000, sameSite: "none",
   httpOnly: true,
   secure: true,
 };
 
 const connectDB = (uri) => {
   mongoose
-    .connect(uri, { dbName: "Chattu" })
+    .connect(uri, { dbName: "Vibes" })
     .then((data) => console.log(`Connected to DB: ${data.connection.host}`))
     .catch((err) => {
       throw err;
