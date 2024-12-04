@@ -22,6 +22,7 @@ import UserItem from "../shared/UserItem";
 
 const Search = () => {
   const { isSearch } = useSelector((state) => state.misc);
+  const { user: loggedInUser } = useSelector((state) => state.auth); // Get logged-in user
   const [searchUser] = useLazySearchUserQuery();
   const [sendFriendRequest, isLoadingSendFriendRequest] = useAsyncMutation(
     useSendFriendRequestMutation
@@ -53,93 +54,97 @@ const Search = () => {
   useEffect(() => {
     const timeOutId = setTimeout(() => {
       searchUser(search.value)
-        .then(({ data }) => setUsers(data.users))
+        .then(({ data }) => {
+          // Filter out the logged-in user's profile
+          const filteredUsers = data.users.filter(user => user._id !== loggedInUser._id);
+          setUsers(filteredUsers);
+        })
         .catch((e) => console.error(e));
     }, 1000);
     return () => {
       clearTimeout(timeOutId);
     };
-  }, [search.value]);
+  }, [search.value, loggedInUser]);
 
   return (
     <Dialog
-  open={isSearch}
-  onClose={searchCloseHandler}
-  fullWidth
-  PaperProps={{
-    sx: {
-      borderRadius: "16px",
-      minHeight: "300px",
-      boxShadow: "0px 4px 10px rgba(0,0,0,0.2)",
-      bgcolor: "white",
-    },
-  }}
->
-  <Stack p={2} spacing={2}>
-    {/* Title with Border */}
-    <DialogTitle
-      textAlign="center"
-      sx={{
-        color: "black",
-        fontWeight: "600",
-        borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
-      }}
-    >
-      Find People
-    </DialogTitle>
-
-    {/* Search Input Field */}
-    <TextField
-      label="Search"
-      value={search.value}
-      onChange={search.changeHandler}
-      variant="outlined"
-      size="small"
+      open={isSearch}
+      onClose={searchCloseHandler}
       fullWidth
-      InputProps={{
-        startAdornment: (
-          <InputAdornment position="start">
-            <SearchIcon />
-          </InputAdornment>
-        ),
-      }}
-      sx={{
-        "& .MuiOutlinedInput-root": {
+      PaperProps={{
+        sx: {
           borderRadius: "16px",
+          minHeight: "300px",
+          boxShadow: "0px 4px 10px rgba(0,0,0,0.2)",
+          bgcolor: "white",
         },
       }}
-    />
-
-    {/* User List */}
-    <List>
-      {users.length > 0 ? (
-        users.map((user, index) => (
-          <React.Fragment key={user._id}>
-            <UserItem
-              user={user}
-              handler={() => addFriendHandler(user._id)}
-              isAdded={user.isAdded || false} // Dynamically track added state
-              requestStatus={user.requestStatus}
-            />
-            {index < users.length - 1 && <Divider />}
-          </React.Fragment>
-        ))
-      ) : (
-        <Stack
-          direction="column"
-          alignItems="center"
-          justifyContent="center"
-          spacing={2}
-          sx={{ height: "200px" }}
+    >
+      <Stack p={2} spacing={2}>
+        {/* Title with Border */}
+        <DialogTitle
+          textAlign="center"
+          sx={{
+            color: "black",
+            fontWeight: "600",
+            borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
+          }}
         >
-          <Typography variant="body1" color="text.secondary">
-            No users found
-          </Typography>
-        </Stack>
-      )}
-    </List>
-  </Stack>
-</Dialog>
+          Find People
+        </DialogTitle>
+
+        {/* Search Input Field */}
+        <TextField
+          label="Search"
+          value={search.value}
+          onChange={search.changeHandler}
+          variant="outlined"
+          size="small"
+          fullWidth
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              borderRadius: "16px",
+            },
+          }}
+        />
+
+        {/* User List */}
+        <List>
+          {users.length > 0 ? (
+            users.map((user, index) => (
+              <React.Fragment key={user._id}>
+                <UserItem
+                  user={user}
+                  handler={() => addFriendHandler(user._id)}
+                  isAdded={user.isAdded || false} // Dynamically track added state
+                  requestStatus={user.requestStatus}
+                />
+                {index < users.length - 1 && <Divider />}
+              </React.Fragment>
+            ))
+          ) : (
+            <Stack
+              direction="column"
+              alignItems="center"
+              justifyContent="center"
+              spacing={2}
+              sx={{ height: "200px" }}
+            >
+              <Typography variant="body1" color="text.secondary">
+                No users found
+              </Typography>
+            </Stack>
+          )}
+        </List>
+      </Stack>
+    </Dialog>
   );
 };
 

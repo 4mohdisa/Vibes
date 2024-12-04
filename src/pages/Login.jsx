@@ -77,11 +77,15 @@ const Login = () => {
     setIsLoading(true);
 
     const formData = new FormData();
-    formData.append("avatar", avatar.file);
     formData.append("name", name.value);
     formData.append("bio", bio.value);
     formData.append("username", username.value);
     formData.append("password", password.value);
+
+    // Append avatar only if it exists
+    if (avatar.file) {
+      formData.append("avatar", avatar.file);
+    }
 
     const config = {
       withCredentials: true,
