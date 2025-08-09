@@ -128,9 +128,8 @@ chat-application/
 - [ ] Message reactions
 - [ ] Push notifications
 
-## 👥 Contributors
-- Uzair (Frontend)
-- Isa (Backend)
+## 👥 Developer
+- **Mohd Isa** - Full Stack Developer (Complete MERN Application)
 
 ## 📄 License
 MIT License - See `LICENSE` file for details.
