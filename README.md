@@ -2,6 +2,8 @@
 
 A modern, full-featured chat application with real-time communication and comprehensive messaging capabilities.
 
+![Chat Application Screenshot](Chat-App-08-09-2025_07_33_PM.png)
+
 ## 🌟 Key Features
 
 ### Frontend
