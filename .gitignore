@@ -1,0 +1,20 @@
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+venv/
+
+# Build
+.next/
+dist/
+build/
+out/
+
+# Misc
+.DS_Store
+*.pem
